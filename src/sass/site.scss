@@ -1,0 +1,30 @@
+@import 'normalize'; // normalize.css
+@import 'color';
+@import 'parts';
+@import 'navigation';
+
+.clearfloat { clear: both; }
+
+.body-container {
+    font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;
+    font-size: 1.125em;
+    color: #333;
+}
+
+h1, h2, h3 {
+    color: #000;
+}
+
+h1 {font-size: 2.5em}
+h2 {font-size: 2em}
+h3 {font-size: 1.5em}
+
+a {
+    text-decoration: none;
+    color: #09f;
+    cursor: pointer;
+}
+
+#app-content {
+    text-align: center;
+}
