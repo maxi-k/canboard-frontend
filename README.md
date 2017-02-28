@@ -5,4 +5,4 @@
 - Run: lein figwheel, make compile-sass
 
 ## Screenshot
-![resources/dev/screenshot1.png](Screenshot)
+![Screenshot](resources/dev/screenshot1.png)
