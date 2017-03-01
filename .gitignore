@@ -16,3 +16,4 @@ pom.xml.asc
 .sass-cache
 *.css
 *.css.map
+!/**/vendor/*.css
