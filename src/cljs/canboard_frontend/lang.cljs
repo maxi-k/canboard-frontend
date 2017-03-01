@@ -3,8 +3,9 @@
 
 (def lang-map
   {:en {:user-name "User"
-        :password "Password"}}
-  )
+        :password "Password"
+        :do-login "Login"}
+   })
 
 (defn translate [key]
   (let [path (if (seq? key) key [key])]

@@ -1,6 +1,8 @@
 (ns canboard-frontend.view
   (:require [canboard-frontend.data :as data]
             [canboard-frontend.lang :as lang :refer [translate]]
+            [canboard-frontend.api :as api]
+            [canboard-frontend.util :as util]
             [soda-ash.core :as sa]))
 
 (defn title []
@@ -51,11 +53,15 @@
                :class "ui centered"
                :src "img/logo/logo-large.png"}]
     [:div#big-title (title)]
-    [sa/Form
+    [:div.ui.form
      [:div.field
       [:label (translate :user-name)]
-      [:input {:type :text :name :user-name :placeholder "test@example.com"}]]
+      [:input {:id :login-username :type :text :name :user-name :placeholder "test@example.com"}]]
      [:div.field
       [:label (translate :password)]
-      [:input {:type :password :name :password :placeholder "password"}]]
+      [:input {:id :login-password :type :password :name :password :placeholder "password"}]]
+     [sa/Button {:on-click (fn [] (api/authenticate-user! (.-value (util/elem-by-id :login-username))
+                                                         (.-value (util/elem-by-id :login-password))) )}
+      (translate :do-login)
+      ]
      ]]])
