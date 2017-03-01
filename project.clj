@@ -8,6 +8,7 @@
                  [ring-server "0.4.0"]
                  [reagent "0.6.0"]
                  [reagent-utils "0.2.0"]
+                 [soda-ash "0.2.0"]
                  [ring "1.5.0"]
                  [ring/ring-defaults "0.2.1"]
                  [compojure "1.5.1"]
@@ -17,7 +18,8 @@
                   :scope "provided"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.1.7"
-                  :exclusions [org.clojure/tools.reader]]]
+                  :exclusions [org.clojure/tools.reader]]
+                 ]
 
   :plugins [[lein-environ "1.0.2"]
             [lein-cljsbuild "1.1.1"]
@@ -122,7 +124,7 @@
                               :exclusions [org.clojure/tools.reader]]
                              [refactor-nrepl "2.0.0-SNAPSHOT"
                               :exclusions [org.clojure/clojure]]
-                             
+
                              [lein-sassy "1.0.7"]]
 
                    :injections [(require 'pjstadig.humane-test-output)

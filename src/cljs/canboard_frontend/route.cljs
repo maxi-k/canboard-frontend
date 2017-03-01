@@ -1,12 +1,12 @@
-(ns canboard-frontend.routes
+(ns canboard-frontend.route
   (:require [secretary.core :as secretary :include-macros true]
             [canboard-frontend.data :as data]
-            [canboard-frontend.views :as views]))
+            [canboard-frontend.view :as view]))
 
 (def pages
   "Map of path => page for client-side routing using secretary."
-  {"/"             #'views/home-page
-   "/about"        #'views/about-page})
+  {"/"             #'view/home-page
+   "/about"        #'view/about-page})
 
 (defn define-routes
   "Sets the default client side routes for the application"
@@ -19,3 +19,8 @@
     (data/current-page! (pages "/about")))
 
   )
+
+(defn dispatch-view []
+  (if (nil? (data/current-user))
+    view/login-page
+    data/current-page))

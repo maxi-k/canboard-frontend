@@ -5,7 +5,8 @@
 
 (def ^:private initial-state
   "The initial state of the application"
-  {})
+  {:lang :en
+   :current-user nil})
 
 (def app-state
   "The state of the application, kept in a reagent atom."
@@ -23,3 +24,9 @@
 
 (defn current-page! [page]
   (session-put! :current-page page))
+
+(defn current-user []
+  (@app-state :current-user))
+
+(defn current-language []
+  (@app-state :lang))
