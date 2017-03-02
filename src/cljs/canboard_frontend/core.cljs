@@ -15,7 +15,7 @@
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render [route/dispatch-view] (.getElementById js/document "app")))
+  (reagent/render-component [(fn [] (route/dispatch-view))] (.getElementById js/document "app")))
 
 (defn init! []
   (accountant/configure-navigation!

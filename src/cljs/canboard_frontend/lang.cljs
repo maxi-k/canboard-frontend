@@ -9,4 +9,4 @@
 
 (defn translate [key]
   (let [path (if (seq? key) key [key])]
-    (get-in lang-map (into [(data/current-language)] path))))
+    (get-in lang-map (into [@data/current-language] path))))

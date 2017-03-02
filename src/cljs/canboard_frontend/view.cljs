@@ -46,22 +46,29 @@
     [:h2 (title)]
     [:h2 "About"]]))
 
-(defn login-page []
-  [:div {:class "ui grid centered equal width" :id :login-segment}
-   [sa/Segment {:class "twelve"}
-    [sa/Image {:size :small
-               :class "ui centered"
-               :src "img/logo/logo-large.png"}]
-    [:div#big-title (title)]
-    [:div.ui.form
-     [:div.field
-      [:label (translate :user-name)]
-      [:input {:id :login-username :type :text :name :user-name :placeholder "test@example.com"}]]
-     [:div.field
-      [:label (translate :password)]
-      [:input {:id :login-password :type :password :name :password :placeholder "password"}]]
-     [sa/Button {:on-click (fn [] (api/authenticate-user! (.-value (util/elem-by-id :login-username))
-                                                         (.-value (util/elem-by-id :login-password))) )}
-      (translate :do-login)
-      ]
-     ]]])
+(def login-page
+  (letfn [(auth []
+            (api/authenticate-user! (.-value (util/elem-by-id :login-username))
+                                    (.-value (util/elem-by-id :login-password))))
+          (key-callback [e] (when (= 13 (.-charCode e)) (auth)))
+          (btn-callback [e] (auth))]
+    (fn []
+      [:div {:class "ui grid centered equal width" :id :login-segment}
+       [sa/Segment {:class "twelve"}
+        [sa/Image {:size :small
+                   :class "ui centered"
+                   :src "img/logo/logo-large.png"}]
+        [:div#big-title (title)]
+        [:div.ui.form
+         [:div.field
+          [:label (translate :user-name)]
+          [:input {:id :login-username :type :text :name :user-name :placeholder "test@example.com"
+                   :on-key-press key-callback}]]
+         [:div.field
+          [:label (translate :password)]
+          [:input {:id :login-password :type :password :name :password :placeholder "password"
+                   :on-key-press key-callback}]]
+         [sa/Button {:on-click btn-callback}
+          (translate :do-login)
+          ]
+         ]]])))

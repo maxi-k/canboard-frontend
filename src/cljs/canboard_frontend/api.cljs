@@ -7,5 +7,6 @@
   "Authenticates the given user by the username and password they used to sign in."
   [username passwd]
   (letfn [(callback [response]
-            (util/log response))]
+            (if (get response "data")
+              (data/data! [:current-user] response)))]
     (rest/sign-in-user username passwd callback)))

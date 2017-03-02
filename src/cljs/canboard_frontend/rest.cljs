@@ -11,8 +11,9 @@
   "Signs in given user with name and password."
   (api-call #'POST "auth/sign_in"
             {:handler callback
-             :crossDomain true
              :error-handler callback
-             :method :json
+             :crossDomain true
+             :format :json
+             :response-format :json
              :params {:email name
                       :password passwd}}))
