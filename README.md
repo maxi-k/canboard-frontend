@@ -1,7 +1,7 @@
 # Canboard Frontend
 
 ## Development
-- Required Tools: [https://leiningen.org/](leiningen), [http://sass-lang.com/install](sass)
+- Required Tools: [leiningen](https://leiningen.org/), [sass](http://sass-lang.com/install)
 - Run: lein figwheel, make compile-sass while developing and running the frontend
 - Any changes made to the frontend will be automatically reloaded by figwheel
 
