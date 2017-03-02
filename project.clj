@@ -11,6 +11,7 @@
                  [soda-ash "0.2.0"]
                  [cljs-ajax "0.5.8"]
                  [ring "1.5.0"]
+                 [ring-cors "0.1.9"]
                  [ring/ring-defaults "0.2.1"]
                  [compojure "1.5.1"]
                  [hiccup "1.0.5"]

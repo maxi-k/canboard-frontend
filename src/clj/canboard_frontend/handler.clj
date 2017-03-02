@@ -3,6 +3,7 @@
             [compojure.route :refer [not-found resources]]
             [hiccup.page :refer [include-js include-css html5]]
             [canboard-frontend.middleware :refer [wrap-middleware]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [config.core :refer [env]]))
 
 (def mount-target-dev
@@ -51,4 +52,7 @@
   (resources "/")
   (not-found "Not Found"))
 
-(def app (wrap-middleware #'routes))
+(def app (wrap-cors #'routes
+                    :access-control-allow-origin [#"localhost:3000"]
+                    :access-control-allow-methods [:get :put :post :delete]
+                    ))
