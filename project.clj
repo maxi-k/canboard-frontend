@@ -51,14 +51,14 @@
 
   :cljsbuild
   {:builds {:min
-            {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
+            {:source-paths ["src/cljs" "env/prod/cljs"]
              :compiler
              {:output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/uberjar"
               :optimizations :advanced
               :pretty-print  false}}
             :app
-            {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+            {:source-paths ["src/cljs" "env/dev/cljs"]
              :compiler
              {:main "canboard-frontend.dev"
               :asset-path "/js/out"
@@ -68,7 +68,7 @@
               :optimizations :none
               :pretty-print  true}}
             :test
-            {:source-paths ["src/cljs" "src/cljc" "test/cljs"]
+            {:source-paths ["src/cljs" "test/cljs"]
              :compiler {:main canboard-frontend.doo-runner
                         :asset-path "/js/out"
                         :output-to "target/test.js"
@@ -77,7 +77,7 @@
                         :pretty-print true}}
 
             :devcards
-            {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+            {:source-paths ["src/cljs" "env/dev/cljs"]
              :figwheel {:devcards true}
              :compiler {:main "canboard-frontend.cards"
                         :asset-path "js/devcards_out"
