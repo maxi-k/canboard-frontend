@@ -38,7 +38,10 @@
   (default-template
    [:div
     [:h2 (title)]
-    [:h2 "Welcome"]]))
+    [:h2 "Welcome"]
+    [:div [:p] [:h4 "User Data"]
+     [:p
+      (str (data/data [:current-user]))]]]))
 
 (defn about-page []
   (default-template

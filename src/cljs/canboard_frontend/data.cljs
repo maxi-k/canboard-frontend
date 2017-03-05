@@ -15,10 +15,12 @@
            (fn [_ _ _ new]
              (.log js/console (str new))))
 
-(defn data [path]
-  (if (or (nil? path) (empty? path))
-    @app-state
-    (get-in @app-state path)))
+(defn data
+  ([] (data nil))
+  ([path]
+   (if (or (nil? path) (empty? path))
+     @app-state
+     (get-in @app-state path))))
 
 (defn data! [path data]
   (if (or (nil? path) (empty? path))

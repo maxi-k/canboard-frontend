@@ -6,7 +6,10 @@
 (defn authenticate-user!
   "Authenticates the given user by the username and password they used to sign in."
   [username passwd]
-  (letfn [(callback [response]
-            (if (get response "data")
-              (data/data! [:current-user] response)))]
+  (letfn [(convert-response [response]
+            (merge (response :headers)
+                   {:data (-> response :body :data)}))
+          (callback [response]
+            (when (== 200 (response :status))
+              (data/data! [:current-user] (convert-response response))))]
     (rest/sign-in-user username passwd callback)))
