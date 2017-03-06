@@ -4,50 +4,34 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [ring-server "0.4.0"]
+  :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
+                 [org.clojure/clojurescript "1.9.473" :scope "provided"]
                  [reagent "0.6.0"]
                  [reagent-utils "0.2.0"]
                  [soda-ash "0.2.0"]
                  [cljs-ajax "0.5.8"]
-                 [ring "1.5.0"]
-                 [ring-cors "0.1.9"]
-                 [ring/ring-defaults "0.2.1"]
-                 [compojure "1.5.1"]
-                 [hiccup "1.0.5"]
-                 [yogthos/config "0.8"]
-                 [org.clojure/clojurescript "1.9.473"
-                  :scope "provided"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.1.7"
-                  :exclusions [org.clojure/tools.reader]]
-                 ]
+                  :exclusions [org.clojure/tools.reader]]]
 
   :plugins [[lein-environ "1.0.2"]
             [lein-cljsbuild "1.1.1"]
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
-  :ring {:handler canboard-frontend.handler/app
-         :uberwar-name "canboard-frontend.war"}
-
   :min-lein-version "2.5.0"
-
-  :uberjar-name "canboard-frontend.jar"
-
-  :main canboard-frontend.server
 
   :clean-targets ^{:protect false}
   [:target-path
    [:cljsbuild :builds :app :compiler :output-dir]
    [:cljsbuild :builds :app :compiler :output-to]]
 
-  :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
 
   :minify-assets
   {:assets
-   {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
+   {"resources/public/css/site.min.css"
+    "resources/public/css/site.css"}}
 
   :cljsbuild
   {:builds {:min
@@ -95,12 +79,8 @@
   {:http-server-root "public"
    :server-port 3449
    :nrepl-port 7002
-   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
-                      "cider.nrepl/cider-middleware"
-                      "refactor-nrepl.middleware/wrap-refactor"
-                      ]
-   :css-dirs ["resources/public/css"]
-   :ring-handler canboard-frontend.handler/app}
+   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
+   :css-dirs ["resources/public/css"]}
 
 
   :sass {:src "src/sass"
@@ -109,15 +89,11 @@
   :profiles {:dev {:repl-options {:init-ns canboard-frontend.repl
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
-                   :dependencies [[ring/ring-mock "0.3.0"]
-                                  [ring/ring-devel "1.5.0"]
-                                  [prone "1.1.4"]
-                                  [figwheel-sidecar "0.5.8"]
+                   :dependencies [[figwheel-sidecar "0.5.8"]
                                   [org.clojure/tools.nrepl "0.2.12"]
                                   [com.cemerick/piggieback "0.2.2-SNAPSHOT"]
                                   [devcards "0.2.1-7"]
-                                  [pjstadig/humane-test-output "0.8.1"]
-                                  ]
+                                  [pjstadig/humane-test-output "0.8.1"]]
 
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.8"]
@@ -127,17 +103,9 @@
                               :exclusions [org.clojure/tools.reader]]
                              [refactor-nrepl "2.0.0-SNAPSHOT"
                               :exclusions [org.clojure/clojure]]
-
                              [lein-sassy "1.0.7"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
 
-                   :env {:dev true}}
-
-             :uberjar {:hooks [minify-assets.plugin/hooks]
-                       :source-paths ["env/prod/clj"]
-                       :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
-                       :env {:production true}
-                       :aot :all
-                       :omit-source true}})
+                   :env {:dev true}}})
