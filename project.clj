@@ -11,11 +11,13 @@
                  [soda-ash "0.2.0"]
                  [cljs-ajax "0.5.8"]
                  [secretary "1.2.3"]
+                 [lein-doo "0.1.6"]
                  [venantius/accountant "0.1.7"
                   :exclusions [org.clojure/tools.reader]]]
 
   :plugins [[lein-environ "1.0.2"]
             [lein-cljsbuild "1.1.1"]
+            [lein-doo "0.1.6"]
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
