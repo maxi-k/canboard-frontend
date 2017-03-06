@@ -2,11 +2,12 @@
 
 ## Development
 - Required Tools: [leiningen](https://leiningen.org/), [sass](http://sass-lang.com/install)
-- Run: `lein figwheel`, `make compile-sass` while developing and running the frontend
-- Any changes made to the frontend will be automatically reloaded by figwheel
+- Compile javascript once: Run `lein devbuild` (compiles for all environments)
+- Autocompile sass, clojurescript with hot swapping in browser: `lein
+  devloop`. This requires [lein-cooper](https://github.com/kouphax/lein-cooper) to be added to the users
+  global leiningen configuration.
 
-After first cloning the repo one may need to run `lein cljsbuild once`
-before running `lein figwheel`.
+
 
 ## Screenshot
 ![Screenshot](resources/dev/screenshot1.png)
