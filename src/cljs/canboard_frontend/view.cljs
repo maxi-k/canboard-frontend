@@ -3,6 +3,7 @@
             [canboard-frontend.lang :as lang :refer [translate]]
             [canboard-frontend.api :as api]
             [canboard-frontend.util :as util]
+            [reagent.core :as r]
             [soda-ash.core :as sa]))
 
 (defn title []
@@ -17,8 +18,7 @@
      [:div#navbar-logo]
      [:div#navbar-title (title)]
      [:div.clearfloat]]]
-   [:a.item {:href "/"} "Home"]
-   [:a.item {:href "/about"} "About"]
+   [:a.item {:href "/boards"} "Boards"]
    [:div.clearfloat]])
 
 (defn default-footer []
@@ -41,13 +41,17 @@
     [:h2 "Welcome"]
     [:div [:p] [:h4 "User Data"]
      [:p
-      (str (data/data [:current-user]))]]]))
+      (str @data/current-user)]]]))
 
-(defn about-page []
-  (default-template
-   [:div
-    [:h2 (title)]
-    [:h2 "About"]]))
+(defn boards-page []
+  (r/create-class
+   {:component-will-mount api/fetch-boards
+    :display-name "boards-page"
+    :reagent-render
+    (fn []
+      (default-template
+       (str @data/boards)
+       ))}))
 
 (def login-page
   (letfn [(auth []

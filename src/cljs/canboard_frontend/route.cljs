@@ -6,7 +6,7 @@
 (def pages
   "Map of path => page for client-side routing using secretary."
   {"/"             #'view/home-page
-   "/about"        #'view/about-page})
+   "/boards"        #'view/boards-page})
 
 (defn define-routes
   "Sets the default client side routes for the application"
@@ -15,15 +15,12 @@
   (secretary/defroute "/" []
     (data/current-page! (pages "/")))
 
-  (secretary/defroute "/index.html" []
-    (data/current-page! (pages "/")))
-
-  (secretary/defroute "/about" []
-    (data/current-page! (pages "/about")))
+  (secretary/defroute "/boards" []
+    (data/current-page! (pages "/boards")))
 
   )
 
 (defn dispatch-view []
-  (if (nil? (@data/app-state :current-user))
-    (view/login-page)
-    ((data/current-page))))
+  (if (nil? @data/current-user)
+    [view/login-page]
+    [(data/current-page)]))

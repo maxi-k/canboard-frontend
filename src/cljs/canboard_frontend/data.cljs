@@ -1,11 +1,13 @@
 (ns canboard-frontend.data
-  (:require [reagent.core :as r :refer [atom]]
+  (:require [canboard-frontend.util :as util]
+            [reagent.core :as r :refer [atom]]
             [reagent.session :as session]))
 
 (def ^:private initial-state
   "The initial state of the application"
   {:lang :en
-   :current-user nil})
+   :current-user nil
+   :boards []})
 
 ;; "The state of the application, kept in a reagent atom."
 (defonce app-state
@@ -40,8 +42,13 @@
 (defn current-page! [page]
   (session-put! :current-page page))
 
-(def current-user
-  (r/cursor app-state [:current-user]))
+(def current-user (r/cursor app-state [:current-user]))
+(def current-language (r/cursor app-state [:lang]))
+(def boards (r/cursor app-state [:boards]))
 
-(def current-language
-  (r/cursor app-state [:lang]))
+(defn token-data []
+  "Returns a map of relevant token data of the current login."
+  (let [relevant util/relevant-auth-headers]
+    (update
+     (reduce (fn [h key] (assoc h (name key) (@current-user key))) {} relevant)
+     "expiry" js/parseInt)))
