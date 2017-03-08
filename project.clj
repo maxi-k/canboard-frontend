@@ -36,7 +36,7 @@
     "resources/public/css/site.css"}}
 
   :aliases {
-   "devbuild" ["do" "clean" ["cljsbuild once"]]
+   "devbuild" ["do" "clean" ["cljsbuild" "once"]]
    "devloop" ["cooper" "figwheel" "sass"]
    }
 
