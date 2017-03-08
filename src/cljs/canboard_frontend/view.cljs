@@ -3,6 +3,7 @@
             [canboard-frontend.lang :as lang :refer [translate]]
             [canboard-frontend.api :as api]
             [canboard-frontend.util :as util]
+            [canboard-frontend.route :as route]
             [reagent.core :as r]
             [soda-ash.core :as sa]))
 
@@ -45,7 +46,7 @@
 
 (defn boards-page []
   (r/create-class
-   {:component-will-mount api/fetch-boards
+   {:component-will-mount #(api/fetch-boards! identity)
     :display-name "boards-page"
     :reagent-render
     (fn []
@@ -56,7 +57,8 @@
 (def login-page
   (letfn [(auth []
             (api/authenticate-user! (.-value (util/elem-by-id :login-username))
-                                    (.-value (util/elem-by-id :login-password))))
+                                    (.-value (util/elem-by-id :login-password))
+                                    (fn [] (route/goto! (route/boards-route)))))
           (key-callback [e] (when (= 13 (.-charCode e)) (auth)))
           (btn-callback [e] (auth))]
     (fn []
