@@ -4,9 +4,11 @@
 (def lang-map
   {:en {:user-name "User"
         :password "Password"
-        :do-login "Login"}
+        :do-login "Login"
+        :session-over "It looks like your session has expired"
+        :login-again "Please log in again"
+        :boards {:new "New Board"}}
    })
 
-(defn translate [key]
-  (let [path (if (seq? key) key [key])]
-    (get-in lang-map (into [@data/current-language] path))))
+(defn translate [& keys]
+  (get-in lang-map (cons @data/current-language keys)))

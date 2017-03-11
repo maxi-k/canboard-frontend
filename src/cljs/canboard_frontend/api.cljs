@@ -5,7 +5,9 @@
 
 (defn update-auth-data!
   [response]
-  (swap! data/current-user merge (select-keys :headers util/relevant-auth-headers)))
+  (if (== (response :status) 401)
+    (swap! data/current-user assoc :unauthorized true)
+    (swap! data/current-user merge (select-keys :headers util/relevant-auth-headers))))
 
 (defn authenticate-user!
   "Authenticates the given user by the username and password they used to sign in."
@@ -25,6 +27,18 @@
   [after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (reset! data/boards (-> response :body :data))
-            (after))]
+            (when-let [boards (get-in response [:body :data])]
+              (reset! data/boards boards)
+              (after)))]
     (rest/fetch-boards (data/token-data) callback)))
+
+(defn create-board!
+  "Creates a new board belonging to the current user.
+  Requires authentication."
+  [board-data after]
+  (letfn [(callback [response]
+            (update-auth-data! response)
+            (util/log response)
+            (swap! data/boards conj (-> response :body :data))
+            (after))]
+    (rest/create-board! board-data (data/token-data) callback)))

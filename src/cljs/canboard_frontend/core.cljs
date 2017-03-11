@@ -9,13 +9,14 @@
 
 (def pages
   "Map of path => page for client-side routing using secretary."
-  {"/"             #'view/home-page
+  {"/"              #'view/home-page
    "/boards"        #'view/boards-page})
 
 (defn dispatch-view
   "General function to dispatch which views should be served given the current state."
   []
-  (if (nil? @data/current-user)
+  (if (or (nil? @data/current-user)
+          (:unauthorized @data/current-user))
     [view/login-page]
     [(data/current-page)]))
 

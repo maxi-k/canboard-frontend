@@ -61,3 +61,13 @@
                   :error-handler callback
                   :format :json
                   :response-format json-auth-headers-response-format}))
+
+(defn create-board!
+  "Creates a new board with the given data."
+  [data auth-data callback]
+  (auth-api-call #'POST "boards" auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :format :json
+                  :response-format json-auth-headers-response-format
+                  :params data}))
