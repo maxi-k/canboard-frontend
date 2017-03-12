@@ -5,6 +5,7 @@
   {:en {:user-name "User"
         :password "Password"
         :do-login "Login"
+        :do-logout "Logout"
         :session-over "It looks like your session has expired"
         :login-again "Please log in again"
         :boards {:new "New Board"}}

@@ -21,6 +21,11 @@
               (after)))]
     (rest/sign-in-user username passwd callback)))
 
+(defn logout!
+  "Logs out the current user."
+  []
+  (reset! data/current-user nil))
+
 (defn fetch-boards!
   "Fetches the users boards and updates the state.
   Requires authentication."

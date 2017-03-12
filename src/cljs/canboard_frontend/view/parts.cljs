@@ -1,5 +1,7 @@
 (ns canboard-frontend.view.parts
-  (:require [soda-ash.core :as sa]))
+  (:require [soda-ash.core :as sa]
+            [canboard-frontend.lang :as lang]
+            [canboard-frontend.api :as api]))
 
 (defn title []
   [:span
@@ -14,6 +16,11 @@
      [:div#navbar-title (title)]
      [:div.clearfloat]]]
    [:a.item {:href "/boards"} "Boards"]
+   [:a.item {:class "floated right"
+             :href "/"
+             :on-click api/logout!}
+    [:span
+     (lang/translate :do-logout)]]
    [:div.clearfloat]])
 
 (defn default-footer []
