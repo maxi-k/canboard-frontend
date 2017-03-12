@@ -10,7 +10,8 @@
 (def pages
   "Map of path => page for client-side routing using secretary."
   {"/"              #'view/home-page
-   "/boards"        #'view/boards-page})
+   "/boards"        #'view/boards-page
+   "/boards/:id"    #'view/board-page})
 
 (defn dispatch-view
   "General function to dispatch which views should be served given the current state."

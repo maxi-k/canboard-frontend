@@ -43,7 +43,18 @@
   [board-data after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (util/log response)
+            (util/log (str response))
             (swap! data/boards conj (-> response :body :data))
             (after))]
     (rest/create-board! board-data (data/token-data) callback)))
+
+(defn fetch-board-data!
+  "Fetches the data for the board with given id."
+  [id after]
+  (letfn [(callback [response]
+            (update-auth-data! response)
+            (util/log (str response))
+            (when-let [data (get-in response [:body :data])]
+              (reset! data/current-board data)
+              (after)))]
+    (rest/fetch-board id (data/token-data) callback)))

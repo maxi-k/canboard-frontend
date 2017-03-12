@@ -19,7 +19,8 @@
      [:p
       (str @data/current-user)]]]))
 
-(def boards-page boards/current-page)
+(defn boards-page [] boards/overview)
+(defn board-page [] boards/board-page)
 
 (def login-page
   (letfn [(auth []
@@ -33,7 +34,7 @@
        [sa/Segment {:class "twelve"}
         [sa/Image {:size :small
                    :class "ui centered"
-                   :src "img/logo/logo-large.png"}]
+                   :src "/img/logo/logo-large.png"}]
         [:div#big-title (parts/title)]
         (when (:unauthorized @data/current-user)
           [:div#alert {:class "ui yellow segment"}

@@ -13,6 +13,10 @@
   (secretary/defroute boards-route "/boards" []
     (data/current-page! (pages "/boards")))
 
+  (secretary/defroute board-route "/boards/:id" {id :id}
+    (reset! data/current-board {:id id})
+    (data/current-page! (pages "/boards/:id")))
+
   (accountant/configure-navigation!
    {:nav-handler
     (fn [path]

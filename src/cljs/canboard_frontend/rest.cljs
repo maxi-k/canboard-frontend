@@ -71,3 +71,11 @@
                   :format :json
                   :response-format json-auth-headers-response-format
                   :params data}))
+
+(defn fetch-board
+  "Fetches the data for the board with the given id."
+  [id auth-data callback]
+  (auth-api-call #'GET (str "boards/" id) auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :response-format json-auth-headers-response-format}))

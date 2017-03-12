@@ -8,6 +8,7 @@
   {:lang :en
    :current-user nil
    :boards []
+   :current-board nil
    :view-data {}})
 
 ;; "The state of the application, kept in a reagent atom."
@@ -45,6 +46,7 @@
 
 (def current-user (r/cursor app-state [:current-user]))
 (def current-language (r/cursor app-state [:lang]))
+(def current-board (r/cursor app-state [:current-board]))
 (def boards (r/cursor app-state [:boards]))
 (def view-data (r/cursor app-state [:view-data]))
 
