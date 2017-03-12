@@ -23,7 +23,7 @@
                          :class "board-overview-item card"}
              [:div.content
               (:title attr)]])
-          [sa/Segment {:class "board-new-button card"
+          [sa/Segment {:class "board-new-button card green"
                        :onclick new-board}
            [:div.content
             [sa/Icon {:class "plus"}]
