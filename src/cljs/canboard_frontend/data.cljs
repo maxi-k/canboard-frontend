@@ -1,7 +1,9 @@
 (ns canboard-frontend.data
   (:require [canboard-frontend.util :as util]
             [reagent.core :as r :refer [atom]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [alandipert.storage-atom :refer [local-storage]]
+            ))
 
 (def ^:private initial-state
   "The initial state of the application"
@@ -13,7 +15,9 @@
 
 ;; "The state of the application, kept in a reagent atom."
 (defonce app-state
-  (r/atom initial-state))
+  (local-storage
+   (r/atom initial-state)
+   :app-storage))
 
 (add-watch app-state :log
            (fn [_ _ _ new]
@@ -48,6 +52,7 @@
 (def current-language (r/cursor app-state [:lang]))
 (def current-board (r/cursor app-state [:current-board]))
 (def boards (r/cursor app-state [:boards]))
+(def lists (r/cursor app-state [:current-board :attributes :lists]))
 (def view-data (r/cursor app-state [:view-data]))
 
 (defn token-data []

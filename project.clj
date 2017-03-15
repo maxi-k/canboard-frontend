@@ -11,6 +11,7 @@
                  [soda-ash "0.2.0"]
                  [cljs-ajax "0.5.8"]
                  [secretary "1.2.3"]
+                 [alandipert/storage-atom "1.2.4"]
                  [lein-doo "0.1.6"]
                  [venantius/accountant "0.1.7"
                   :exclusions [org.clojure/tools.reader]]]
