@@ -13,9 +13,15 @@
   (secretary/defroute boards-route "/boards" []
     (data/current-page! (pages "/boards")))
 
+  (secretary/defroute board-create-route "/boards/create" []
+    (data/current-page! (pages "/boards/create")))
+
   (secretary/defroute board-route "/boards/:id" {id :id}
     (reset! data/current-board {:id id})
     (data/current-page! (pages "/boards/:id")))
+
+  (secretary/defroute list-route "/boards/:board_id/list/:id" {board_id :board_id id :id}
+    (data/current-page! (pages "/boards/:board_id/list/:id")))
 
   (accountant/configure-navigation!
    {:nav-handler

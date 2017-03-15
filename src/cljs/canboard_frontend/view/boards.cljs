@@ -21,12 +21,12 @@
           (for [board @data/boards
                 :let [attr (board :attributes)]]
             [sa/Segment {:key (:id board)
+                         :href (route/board-route {:id (:id board)})
                          :class "board-overview-item card"}
              [:div.content
-              [:a {:href (route/board-route {:id (:id board)})}
-               (:title attr)]]])
-          [sa/Segment {:class "board-new-button card green"
-                       :onclick new-board}
+              (:title attr)]])
+          [sa/Segment {:class "board-new-button card"
+                       :href (route/board-create-route)}
            [:div.content
             [sa/Icon {:class "plus"}]
             [:span (lang/translate :boards :new)]]]
@@ -40,4 +40,12 @@
     :display-name "board-page"
     :reagent-render
     (fn []
-      (parts/default-template (str @data/current-board)))}))
+      (let [cur-board @data/current-board]
+        (parts/default-template
+         [:div#board-view-wrapper {:class "ui cards"}
+          (for [list @data/lists]
+            [sa/Segment {:key (:id list)
+                         :class "list-item card"
+                         :href (route/list-route {:board_id (:id cur-board)
+                                                  :id (:id list)})}
+             [:div.content [:span (:title list)]]])])))}))

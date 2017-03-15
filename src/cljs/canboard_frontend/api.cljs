@@ -53,8 +53,7 @@
   [id after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (util/log (str response))
-            (when-let [data (get-in response [:body :data])]
+            (when-let [data (get-in response [:body :data 0])]
               (reset! data/current-board data)
               (after)))]
     (rest/fetch-board id (data/token-data) callback)))

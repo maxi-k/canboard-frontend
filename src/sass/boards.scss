@@ -1,11 +1,14 @@
-#boards-overview-wrapper {
+@import 'variables';
+
+#boards-overview-wrapper, #board-view-wrapper {
     padding: $content-padding;
 }
 
-.board-overview-item {
+.board-overview-item, .board-new-button, .list-item {
     width: 200px;
-}
+    color: inherit;
 
-.board-new-button {
-    width: 200px;
+    &:hover {
+        color: inherit;
+    }
 }
