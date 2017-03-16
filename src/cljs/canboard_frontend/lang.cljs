@@ -8,6 +8,10 @@
         :do-logout "Logout"
         :session-over "It looks like your session has expired"
         :login-again "Please log in again"
+        :do-create "Create"
+        :do-cancel "Cancel"
+        :title "Title"
+        :description "Description"
         :boards {:new "New Board"}}
    })
 

@@ -42,8 +42,8 @@
   Requires authentication."
   [board-data after]
   (letfn [(callback [response]
-            (update-auth-data! response)
             (util/log (str response))
+            (update-auth-data! response)
             (swap! data/boards conj (-> response :body :data))
             (after))]
     (rest/create-board! board-data (data/token-data) callback)))
