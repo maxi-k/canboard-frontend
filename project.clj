@@ -36,10 +36,9 @@
    {"resources/public/css/site.min.css"
     "resources/public/css/site.css"}}
 
-  :aliases {
-   "devbuild" ["do" "clean" ["cljsbuild" "once"]]
-   "devloop" ["cooper" "figwheel" "sass"]
-   }
+  :aliases
+  {"devbuild" ["do" "clean" ["cljsbuild" "once"]]
+   "devloop" ["cooper" "figwheel" "sass"]}
 
   :cljsbuild
   {:builds {:min
@@ -78,10 +77,7 @@
                         :output-dir "target/cljsbuild/public/js/devcards_out"
                         :source-map-timestamp true
                         :optimizations :none
-                        :pretty-print true}}
-            }
-   }
-
+                        :pretty-print true}}}}
 
   :figwheel
   {:http-server-root "public"
@@ -90,30 +86,31 @@
    :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
    :css-dirs ["resources/public/css"]}
 
+  :sass
+  {:src "src/sass"
+   :dst "resources/public/css"}
 
-  :sass {:src "src/sass"
-         :dst "resources/public/css"}
+  :profiles
+  {:dev {:repl-options {:init-ns canboard-frontend.repl
+                        :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
-  :profiles {:dev {:repl-options {:init-ns canboard-frontend.repl
-                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+         :dependencies [[figwheel-sidecar "0.5.8"]
+                        [org.clojure/tools.nrepl "0.2.12"]
+                        [com.cemerick/piggieback "0.2.2-SNAPSHOT"]
+                        [devcards "0.2.1-7"]
+                        [pjstadig/humane-test-output "0.8.1"]]
 
-                   :dependencies [[figwheel-sidecar "0.5.8"]
-                                  [org.clojure/tools.nrepl "0.2.12"]
-                                  [com.cemerick/piggieback "0.2.2-SNAPSHOT"]
-                                  [devcards "0.2.1-7"]
-                                  [pjstadig/humane-test-output "0.8.1"]]
+         :source-paths ["env/dev/clj"]
+         :plugins [[lein-figwheel "0.5.8"]
+                   [lein-doo "0.1.6"]
+                   [cider/cider-nrepl "0.10.0-SNAPSHOT"]
+                   [org.clojure/tools.namespace "0.3.0-alpha2"
+                    :exclusions [org.clojure/tools.reader]]
+                   [refactor-nrepl "2.0.0-SNAPSHOT"
+                    :exclusions [org.clojure/clojure]]
+                   [lein-sassy "1.0.7"]]
 
-                   :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.8"]
-                             [lein-doo "0.1.6"]
-                             [cider/cider-nrepl "0.10.0-SNAPSHOT"]
-                             [org.clojure/tools.namespace "0.3.0-alpha2"
-                              :exclusions [org.clojure/tools.reader]]
-                             [refactor-nrepl "2.0.0-SNAPSHOT"
-                              :exclusions [org.clojure/clojure]]
-                             [lein-sassy "1.0.7"]]
+         :injections [(require 'pjstadig.humane-test-output)
+                      (pjstadig.humane-test-output/activate!)]
 
-                   :injections [(require 'pjstadig.humane-test-output)
-                                (pjstadig.humane-test-output/activate!)]
-
-                   :env {:dev true}}})
+         :env {:dev true}}})

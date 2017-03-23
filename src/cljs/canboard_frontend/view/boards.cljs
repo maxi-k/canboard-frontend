@@ -19,12 +19,14 @@
   (letfn [(create-callback []
             (api/create-board! {:title (.-value (util/elem-by-id :board-title))
                                 :description (.-value (util/elem-by-id :board-description))}
-                               (fn [] (route/goto! (route/boards-route)))))
+                               (fn [] (route/goto! (route/boards-route))
+                                 (toggle-board-creation false))))
           (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
           (btn-callback [e] (create-callback))]
     (if (-> @data/view-data :boards :creating)
-      [sa/Segment {:class "board-new-button green card"}
+      [sa/Segment {:class "board-new-button piled card"}
        [:div.content
+        [:p.header (lang/translate :boards :new)]
         [:div.ui.form
          [:div.field
           [:label (lang/translate :title)]
@@ -33,24 +35,27 @@
          [:div.field
           [:label (lang/translate :description)]
           [:input {:id :board-description :type :text :name :board-description :placeholder "Board Description"
-                   :on-key-press key-callback}]]
-         ]]
-       [:div.extra.content
-        [sa/Button {:on-click #(toggle-board-creation false)}
+                   :on-key-press key-callback}]]]]
+       [:div.extra.content.ui.two.buttons
+        [sa/Button {:class "basic red"
+                    :on-click #(toggle-board-creation false)}
          (lang/translate :do-cancel)]
-        [sa/Button {:on-click btn-callback}
+        [sa/Button {:class "basic green"
+                    :on-click btn-callback}
          (lang/translate :do-create)]]]
-      [sa/Segment {:class "board-new-button green card"
-                   :href "#"
-                   :on-click #(toggle-board-creation true)}
-       [:div.content
+      [sa/Segment {:class "board-new-button secondary piled card collapsed"}
+       [:div.content {
+                      :on-click #(toggle-board-creation true)}
         [sa/Icon {:class "plus"}]
-        [:span (lang/translate :boards :new)]]])))
+        [:span {:class "middle aligned"}
+         (lang/translate :boards :new)]]])))
 
 (def overview
   "Overview of the boards available to the current user."
   (letfn [(new-board []
-            (api/create-board! {} identity))]
+            (api/create-board! {} identity))
+          (delete-board [id]
+            (api/delete-board! id identity))]
     (r/create-class
      {:component-will-mount #(api/fetch-boards! identity)
       :display-name "boards-page"
@@ -61,12 +66,18 @@
           [:div {:class "ui cards"}
            (for [board @data/boards
                  :let [attr (get board :attributes)]]
-             [sa/Segment {:key (:id board)
-                          :href (route/board-route {:id (:id board)})
-                          :class "board-overview-item card"}
-              [:div.content
-               (:title attr)]])]
-          [new-board-button]]))})))
+             [:div.overview-item-wrapper
+              [sa/Segment {:key (:id board)
+                           :class "board-overview-item card"}
+               [:div.content
+                [:a.header {:href (route/board-route {:id (:id board)})}
+                 (:title attr)]
+                [:span.description (:description attr)]]
+               [sa/Button {:class "extra content"
+                           :on-click #(delete-board (:id board))}
+                "Delete"]]])
+           [:div.overview-item-wrapper
+            [new-board-button]]]]))})))
 
 
 (def board-page

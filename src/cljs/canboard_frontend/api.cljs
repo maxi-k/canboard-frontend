@@ -48,6 +48,15 @@
             (after))]
     (rest/create-board! board-data (data/token-data) callback)))
 
+(defn delete-board!
+  "Deletes the board given by its id."
+  [id after]
+  (letfn [(callback [response]
+            (util/log (str response))
+            (update-auth-data! response)
+            (fetch-boards! after))]
+    (rest/delete-board! id (data/token-data) callback)))
+
 (defn fetch-board-data!
   "Fetches the data for the board with given id."
   [id after]

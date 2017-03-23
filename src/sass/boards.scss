@@ -4,11 +4,37 @@
     padding: $content-padding;
 }
 
+.overview-item-wrapper {
+    margin: 7px;
+}
+
 .board-overview-item, .board-new-button, .list-item {
     width: 200px;
+    display: block;
     color: inherit;
+
+    .extra.content:hover {
+        color: $warning-red;
+    }
 
     &:hover {
         color: inherit;
+    }
+}
+
+.board-overview-item {
+    height: 150px;
+}
+
+.board-new-button {
+    .content { cursor: pointer; }
+}
+
+.board-new-button.collapsed {
+    height: 150px;
+    line-height: 118px;
+
+    &:hover {
+        color: $blue1;
     }
 }

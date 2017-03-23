@@ -60,4 +60,5 @@
   (let [relevant util/relevant-auth-headers]
     (update
      (reduce (fn [h key] (assoc h (name key) (@current-user key))) {} relevant)
-     "expiry" js/parseInt)))
+     "expiry"
+     js/parseInt)))

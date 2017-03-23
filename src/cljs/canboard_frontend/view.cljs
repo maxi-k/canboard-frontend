@@ -7,8 +7,7 @@
             [canboard-frontend.util :as util]
             [canboard-frontend.route :as route]
             [canboard-frontend.view.boards :as boards]
-            [canboard-frontend.view.parts :as parts :refer [default-template]]
-))
+            [canboard-frontend.view.parts :as parts :refer [default-template]]))
 
 (defn home-page []
   (default-template
@@ -50,6 +49,4 @@
           [:input {:id :login-password :type :password :name :password :placeholder "password"
                    :on-key-press key-callback}]]
          [sa/Button {:on-click btn-callback}
-          (translate :do-login)
-          ]
-         ]]])))
+          (translate :do-login)]]]])))

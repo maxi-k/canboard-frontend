@@ -1,6 +1,6 @@
 (ns canboard-frontend.rest
   (:require [canboard-frontend.util :as util]
-            [ajax.core :as ajax :refer [GET POST]]
+            [ajax.core :as ajax :refer [GET POST PUT DELETE]]
             [ajax.protocols :as ajaxp]
             [goog.json :as json]))
 
@@ -71,6 +71,14 @@
                   :format :json
                   :response-format json-auth-headers-response-format
                   :params data}))
+
+(defn delete-board!
+  "Deletes the board with given id"
+  [id auth-data callback]
+  (auth-api-call #'DELETE (str "boards/" id) auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :response-format json-auth-headers-response-format}))
 
 (defn fetch-board
   "Fetches the data for the board with the given id."
