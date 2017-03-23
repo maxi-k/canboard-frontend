@@ -66,9 +66,8 @@
           [:div {:class "ui cards"}
            (for [board @data/boards
                  :let [attr (get board :attributes)]]
-             [:div.overview-item-wrapper
-              [sa/Segment {:key (:id board)
-                           :class "board-overview-item card"}
+             [:div.overview-item-wrapper {:key (:id board)}
+              [sa/Segment {:class "board-overview-item card"}
                [:div.content
                 [:a.header {:href (route/board-route {:id (:id board)})}
                  (:title attr)]
@@ -79,11 +78,51 @@
            [:div.overview-item-wrapper
             [new-board-button]]]]))})))
 
+(defn toggle-list-creation
+  [do-create]
+  (swap! data/view-data assoc-in [:lists :creating] do-create))
+
+(defn new-list-button
+  "Component for a button that creates a new list. "
+  [id]
+  (letfn [(create-callback []
+            (api/create-list! {:title (.-value (util/elem-by-id :list-title))
+                               :description (.-value (util/elem-by-id :list-description))}
+                              id
+                              (fn [] ;; (route/goto! (route/board-route {:id id}))
+                                (toggle-list-creation false))))
+          (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
+          (btn-callback [e] (create-callback))]
+    (if (-> @data/view-data :lists :creating)
+      [sa/Segment {:class "list-new-button piled card"}
+       [:div.content
+        [:p.header (lang/translate :lists :new)]
+        [:div.ui.form
+         [:div.field
+          [:label (lang/translate :title)]
+          [:input {:id :list-title :type :text :name :list-title :placeholder "List Name"
+                   :on-key-press key-callback}]]
+         [:div.field
+          [:label (lang/translate :description)]
+          [:input {:id :list-description :type :text :name :list-description :placeholder "List Description"
+                   :on-key-press key-callback}]]]]
+       [:div.extra.content.ui.two.buttons
+        [sa/Button {:class "basic red"
+                    :on-click #(toggle-list-creation false)}
+         (lang/translate :do-cancel)]
+        [sa/Button {:class "basic green"
+                    :on-click btn-callback}
+         (lang/translate :do-create)]]]
+      [sa/Segment {:class "list-new-button secondary piled card collapsed"}
+       [:div.content {:on-click #(toggle-list-creation true)}
+        [sa/Icon {:class "plus"}]
+        [:span {:class "middle aligned"}
+         (lang/translate :lists :new)]]])))
 
 (def board-page
   "View a single board."
   (r/create-class
-   {:component-will-mount #(api/fetch-board-data! (@data/current-board :id) identity)
+   {:component-will-mount #(api/fetch-board-lists! (@data/current-board :id) identity)
     :display-name "board-page"
     :reagent-render
     (fn []
@@ -91,8 +130,10 @@
         (parts/default-template
          [:div#board-view-wrapper {:class "ui cards"}
           (for [list @data/lists]
-            [sa/Segment {:key (:id list)
-                         :class "list-item card"
-                         :href (route/list-route {:board_id (:id cur-board)
-                                                  :id (:id list)})}
-             [:div.content [:span (:title list)]]])])))}))
+            [:div.list-item-wrapper {:key (:id list)}
+             [sa/Segment {:class "list-item card"
+                          :href (route/list-route {:board_id (:id cur-board)
+                                                   :id (:id list)})}
+              [:div.content [:span (:title list)]]]])
+          [:div.list-item-wrapper
+           [new-list-button (cur-board :id)]]])))}))

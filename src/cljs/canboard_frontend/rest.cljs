@@ -80,10 +80,20 @@
                   :error-handler callback
                   :response-format json-auth-headers-response-format}))
 
-(defn fetch-board
-  "Fetches the data for the board with the given id."
+(defn fetch-lists
+  "Fetches the lists for the board with the given id."
   [id auth-data callback]
-  (auth-api-call #'GET (str "boards/" id) auth-data
+  (auth-api-call #'GET (str "boards/" id "/lists") auth-data
                  {:handler callback
                   :error-handler callback
                   :response-format json-auth-headers-response-format}))
+
+(defn create-list!
+  "Creates a new board with the given data."
+  [data board-id auth-data callback]
+  (auth-api-call #'POST (str "boards/" board-id "/lists") auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :format :json
+                  :response-format json-auth-headers-response-format
+                  :params data}))

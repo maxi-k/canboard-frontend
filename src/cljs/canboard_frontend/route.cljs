@@ -14,8 +14,9 @@
     (data/current-page! (pages "/boards")))
 
   (secretary/defroute board-route "/boards/:id" {id :id}
-    (reset! data/current-board {:id id})
-    (data/current-page! (pages "/boards/:id")))
+    (when-let [board (data/board-by-id id)]
+      (reset! data/current-board board)
+      (data/current-page! (pages "/boards/:id"))))
 
   (secretary/defroute list-route "/boards/:board_id/list/:id" {board_id :board_id id :id}
     (data/current-page! (pages "/boards/:board_id/list/:id")))

@@ -62,3 +62,8 @@
      (reduce (fn [h key] (assoc h (name key) (@current-user key))) {} relevant)
      "expiry"
      js/parseInt)))
+
+(defn board-by-id
+  "Returns the board with given id, or nil if there is none."
+  [id]
+  (first (filter #(== (:id %) id) @boards)))

@@ -12,8 +12,8 @@
         :do-cancel "Cancel"
         :title "Title"
         :description "Description"
-        :boards {:new "New Board"}}
-   })
+        :boards {:new "New Board"}
+        :lists {:new "New List"}}})
 
 (defn translate [& keys]
   (get-in lang-map (cons @data/current-language keys)))

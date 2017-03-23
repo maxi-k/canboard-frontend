@@ -57,12 +57,22 @@
             (fetch-boards! after))]
     (rest/delete-board! id (data/token-data) callback)))
 
-(defn fetch-board-data!
-  "Fetches the data for the board with given id."
+(defn fetch-board-lists!
+  "Fetches the lists for the board with given id."
   [id after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (when-let [data (get-in response [:body :data 0])]
-              (reset! data/current-board data)
+            (when-let [data (get-in response [:body :data])]
+              (reset! data/lists data)
               (after)))]
-    (rest/fetch-board id (data/token-data) callback)))
+    (rest/fetch-lists id (data/token-data) callback)))
+
+(defn create-list!
+  "Creates a list with given data in the given board."
+  [list-data id after]
+  (letfn [(callback [response]
+            (util/log (str response))
+            (update-auth-data! response)
+            (swap! data/lists conj (-> response :body :data))
+            (after))]
+    (rest/create-list! list-data id (data/token-data) callback)))
