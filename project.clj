@@ -83,7 +83,7 @@
   {:http-server-root "public"
    :server-port 3449
    :nrepl-port 7002
-   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
+   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
    :css-dirs ["resources/public/css"]}
 
   :sass
@@ -100,7 +100,7 @@
                         [devcards "0.2.1-7"]
                         [pjstadig/humane-test-output "0.8.1"]]
 
-         :source-paths ["env/dev/clj"]
+         :source-paths ["env/dev/clj" "env/dev/cljs"]
          :plugins [[lein-figwheel "0.5.8"]
                    [lein-doo "0.1.6"]
                    [cider/cider-nrepl "0.10.0-SNAPSHOT"]
