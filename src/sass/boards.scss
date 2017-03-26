@@ -16,25 +16,29 @@
     .extra.content:hover {
         color: $warning-red;
     }
-
-    &:hover {
-        color: inherit;
-    }
 }
 
 .board-overview-item {
     height: 150px;
 }
 
-.board-new-button {
+.board-new-button.collapsed, .list-new-button.collapsed {
     .content { cursor: pointer; }
+
+    &:hover {
+        color: $blue1;
+    }
 }
 
 .board-new-button.collapsed {
     height: 150px;
     line-height: 118px;
+}
 
-    &:hover {
-        color: $blue1;
-    }
+.list-new-button.collapsed {
+
+}
+
+.list-item {
+
 }

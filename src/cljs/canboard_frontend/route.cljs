@@ -1,7 +1,8 @@
 (ns canboard-frontend.route
   (:require [secretary.core :as secretary :include-macros true]
             [accountant.core :as accountant]
-            [canboard-frontend.data :as data]))
+            [canboard-frontend.data :as data]
+            [canboard-frontend.util :as util]))
 
 (defn define-routes
   "Sets the default client side routes for the application"
@@ -14,8 +15,8 @@
     (data/current-page! (pages "/boards")))
 
   (secretary/defroute board-route "/boards/:id" {id :id}
-    (when-let [board (data/board-by-id id)]
-      (reset! data/current-board board)
+    (when (not (nil? (@data/boards (js/parseInt id))))
+      (reset! data/current-board-id (js/parseInt id))
       (data/current-page! (pages "/boards/:id"))))
 
   (secretary/defroute list-route "/boards/:board_id/list/:id" {board_id :board_id id :id}

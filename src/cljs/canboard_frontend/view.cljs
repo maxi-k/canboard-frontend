@@ -25,7 +25,9 @@
   (letfn [(auth []
             (api/authenticate-user! (.-value (util/elem-by-id :login-username))
                                     (.-value (util/elem-by-id :login-password))
-                                    (fn [] (route/goto! (route/boards-route)))))
+                                    (fn []
+                                      (when (= "/" (util/current-path))
+                                        (route/goto! (route/boards-route))))))
           (key-callback [e] (when (= 13 (.-charCode e)) (auth)))
           (btn-callback [e] (auth))]
     (fn []

@@ -17,4 +17,4 @@ pom.xml.asc
 *.css
 *.css.map
 !/**/vendor/*.css
-/.cljs_rhino_repl/.cljs_rhino_repl/cljs/core.js
+.cljs_rhino_repl/

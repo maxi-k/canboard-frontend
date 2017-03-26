@@ -52,10 +52,8 @@
 
 (def overview
   "Overview of the boards available to the current user."
-  (letfn [(new-board []
-            (api/create-board! {} identity))
-          (delete-board [id]
-            (api/delete-board! id identity))]
+  (letfn [(new-board [] (api/create-board! {} identity))
+          (delete-board [id] (api/delete-board! id identity))]
     (r/create-class
      {:component-will-mount #(api/fetch-boards! identity)
       :display-name "boards-page"
@@ -64,16 +62,16 @@
         (parts/default-template
          [:div#boards-overview-wrapper
           [:div {:class "ui cards"}
-           (for [board @data/boards
-                 :let [attr (get board :attributes)]]
-             [:div.overview-item-wrapper {:key (:id board)}
+           (for [[board-id board] @data/boards
+                 :let [attr (board :attributes)]]
+             [:div.overview-item-wrapper {:key board-id}
               [sa/Segment {:class "board-overview-item card"}
                [:div.content
-                [:a.header {:href (route/board-route {:id (:id board)})}
+                [:a.header {:href (route/board-route {:id board-id})}
                  (:title attr)]
                 [:span.description (:description attr)]]
                [sa/Button {:class "extra content"
-                           :on-click #(delete-board (:id board))}
+                           :on-click #(delete-board board-id)}
                 "Delete"]]])
            [:div.overview-item-wrapper
             [new-board-button]]]]))})))
@@ -84,13 +82,11 @@
 
 (defn new-list-button
   "Component for a button that creates a new list. "
-  [id]
+  [board-id]
   (letfn [(create-callback []
-            (api/create-list! {:title (.-value (util/elem-by-id :list-title))
-                               :description (.-value (util/elem-by-id :list-description))}
-                              id
-                              (fn [] ;; (route/goto! (route/board-route {:id id}))
-                                (toggle-list-creation false))))
+            (api/create-list! {:title (.-value (util/elem-by-id :list-title))}
+                              board-id
+                              (fn [] (toggle-list-creation false))))
           (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
           (btn-callback [e] (create-callback))]
     (if (-> @data/view-data :lists :creating)
@@ -101,10 +97,6 @@
          [:div.field
           [:label (lang/translate :title)]
           [:input {:id :list-title :type :text :name :list-title :placeholder "List Name"
-                   :on-key-press key-callback}]]
-         [:div.field
-          [:label (lang/translate :description)]
-          [:input {:id :list-description :type :text :name :list-description :placeholder "List Description"
                    :on-key-press key-callback}]]]]
        [:div.extra.content.ui.two.buttons
         [sa/Button {:class "basic red"
@@ -122,18 +114,17 @@
 (def board-page
   "View a single board."
   (r/create-class
-   {:component-will-mount #(api/fetch-board-lists! (@data/current-board :id) identity)
+   {:component-will-mount #(api/fetch-board-lists! @data/current-board-id identity)
     :display-name "board-page"
     :reagent-render
     (fn []
-      (let [cur-board @data/current-board]
+      (let [cur-board-id @data/current-board-id]
         (parts/default-template
          [:div#board-view-wrapper {:class "ui cards"}
-          (for [list @data/lists]
-            [:div.list-item-wrapper {:key (:id list)}
-             [sa/Segment {:class "list-item card"
-                          :href (route/list-route {:board_id (:id cur-board)
-                                                   :id (:id list)})}
-              [:div.content [:span (:title list)]]]])
+          (for [[list-id list] @data/lists]
+            [:div.list-item-wrapper {:key list-id}
+             [sa/Segment {:class "list-item card"}
+              [:div.content
+               [:span.header (-> list :attributes :title)]]]])
           [:div.list-item-wrapper
-           [new-list-button (cur-board :id)]]])))}))
+           [new-list-button cur-board-id]]])))}))

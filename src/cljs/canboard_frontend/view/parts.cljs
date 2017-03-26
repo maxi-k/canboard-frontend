@@ -32,6 +32,6 @@
 
 (defn default-template [content]
   [:div#app-wrapper
-   (default-header)
-   (default-wrapper content)
-   (default-footer)])
+   [default-header]
+   [default-wrapper content]
+   [default-footer]])
