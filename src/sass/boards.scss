@@ -22,8 +22,10 @@
     height: 150px;
 }
 
-.board-new-button.collapsed, .list-new-button.collapsed {
-    .content { cursor: pointer; }
+.board-new-button.collapsed,
+.list-new-button.collapsed,
+.card-new-button.collapsed {
+    cursor: pointer;
 
     &:hover {
         color: $blue1;
@@ -41,4 +43,10 @@
 
 .list-item {
 
+}
+
+.card-overview-item {
+    margin: 0;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
 }

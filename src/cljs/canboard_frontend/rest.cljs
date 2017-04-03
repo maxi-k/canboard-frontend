@@ -97,3 +97,11 @@
                   :format :json
                   :response-format json-auth-headers-response-format
                   :params data}))
+
+(defn fetch-cards
+  "Fetches the cards for the list with the given id."
+  [board-id list-id auth-data callback]
+  (auth-api-call #'GET (str "boards/" board-id "/lists/" list-id "/cards") auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :response-format json-auth-headers-response-format}))

@@ -15,6 +15,9 @@ For interactive development, there are two options:
   [nrepl](https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl) for
   more interactive development and compile sass with just `lein sass
   watch` or `sass` directly.
+  - *Emacs:* After following the tutorial for `nrepl` with `figwheel`
+    linked above, just use `cider-jack-in-clojurescript` or
+    `cider-jack-in`, depending on the setup
 
 
 

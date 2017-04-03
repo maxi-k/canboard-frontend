@@ -6,7 +6,8 @@
             [canboard-frontend.lang :as lang]
             [canboard-frontend.util :as util]
             [canboard-frontend.route :as route]
-            [canboard-frontend.view.parts :as parts]))
+            [canboard-frontend.view.parts :as parts]
+            [canboard-frontend.view.lists :as lists]))
 
 (defn toggle-board-creation
   [do-create]
@@ -23,7 +24,7 @@
                                  (toggle-board-creation false))))
           (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
           (btn-callback [e] (create-callback))]
-    (if (-> @data/view-data :boards :creating)
+    (if (get-in @data/view-data [:boards :creating])
       [sa/Segment {:class "board-new-button piled card"}
        [:div.content
         [:p.header (lang/translate :boards :new)]
@@ -76,41 +77,6 @@
            [:div.overview-item-wrapper
             [new-board-button]]]]))})))
 
-(defn toggle-list-creation
-  [do-create]
-  (swap! data/view-data assoc-in [:lists :creating] do-create))
-
-(defn new-list-button
-  "Component for a button that creates a new list. "
-  [board-id]
-  (letfn [(create-callback []
-            (api/create-list! {:title (.-value (util/elem-by-id :list-title))}
-                              board-id
-                              (fn [] (toggle-list-creation false))))
-          (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
-          (btn-callback [e] (create-callback))]
-    (if (-> @data/view-data :lists :creating)
-      [sa/Segment {:class "list-new-button piled card"}
-       [:div.content
-        [:p.header (lang/translate :lists :new)]
-        [:div.ui.form
-         [:div.field
-          [:label (lang/translate :title)]
-          [:input {:id :list-title :type :text :name :list-title :placeholder "List Name"
-                   :on-key-press key-callback}]]]]
-       [:div.extra.content.ui.two.buttons
-        [sa/Button {:class "basic red"
-                    :on-click #(toggle-list-creation false)}
-         (lang/translate :do-cancel)]
-        [sa/Button {:class "basic green"
-                    :on-click btn-callback}
-         (lang/translate :do-create)]]]
-      [sa/Segment {:class "list-new-button secondary piled card collapsed"}
-       [:div.content {:on-click #(toggle-list-creation true)}
-        [sa/Icon {:class "plus"}]
-        [:span {:class "middle aligned"}
-         (lang/translate :lists :new)]]])))
-
 (def board-page
   "View a single board."
   (r/create-class
@@ -123,8 +89,6 @@
          [:div#board-view-wrapper {:class "ui cards"}
           (for [[list-id list] @data/lists]
             [:div.list-item-wrapper {:key list-id}
-             [sa/Segment {:class "list-item card"}
-              [:div.content
-               [:span.header (-> list :attributes :title)]]]])
+             [lists/single-list cur-board-id list-id list]])
           [:div.list-item-wrapper
-           [new-list-button cur-board-id]]])))}))
+           [lists/new-list-button cur-board-id]]])))}))

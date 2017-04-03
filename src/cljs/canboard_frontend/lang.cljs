@@ -13,7 +13,8 @@
         :title "Title"
         :description "Description"
         :boards {:new "New Board"}
-        :lists {:new "New List"}}})
+        :lists {:new "New List"}
+        :cards {:new "New Card"}}})
 
 (defn translate [& keys]
   (get-in lang-map (cons @data/current-language keys)))

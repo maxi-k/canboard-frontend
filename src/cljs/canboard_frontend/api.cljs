@@ -114,3 +114,13 @@
               (swap! data/lists assoc (:id list) list)
               (after)))]
     (rest/create-list! list-data id (data/token-data) callback)))
+
+(defn fetch-list-cards!
+  "Fetches the cards of a single list."
+  [board-id list-id after]
+  (letfn [(callback [response]
+            (update-auth-data! response)
+            (when-let [data (get-in response [:body :data])]
+              (swap! data/lists assoc-in [list-id :attributes :cards] (conv-cards data))
+              (after)))]
+    (rest/fetch-cards board-id list-id (data/token-data) callback)))
