@@ -54,7 +54,8 @@
 (def overview
   "Overview of the boards available to the current user."
   (letfn [(new-board [] (api/create-board! {} identity))
-          (delete-board [id] (api/delete-board! id identity))]
+          (delete-board [id] (when (js/confirm (lang/translate :confirm :deletion))
+                               (api/delete-board! id identity)))]
     (r/create-class
      {:component-will-mount #(api/fetch-boards! identity)
       :display-name "boards-page"
@@ -63,17 +64,16 @@
         (parts/default-template
          [:div#boards-overview-wrapper
           [:div {:class "ui cards"}
-           (for [[board-id board] @data/boards
-                 :let [attr (board :attributes)]]
+           (for [[board-id board] @data/boards]
              [:div.overview-item-wrapper {:key board-id}
               [sa/Segment {:class "board-overview-item card"}
                [:div.content
                 [:a.header {:href (route/board-route {:id board-id})}
-                 (:title attr)]
-                [:span.description (:description attr)]]
+                 (:title board)]
+                [:span.description (:description board)]]
                [sa/Button {:class "extra content"
                            :on-click #(delete-board board-id)}
-                "Delete"]]])
+                (lang/translate :boards :delete)]]])
            [:div.overview-item-wrapper
             [new-board-button]]]]))})))
 
@@ -88,7 +88,7 @@
         (parts/default-template
          [:div#board-view-wrapper {:class "ui cards"}
           (for [[list-id list] @data/lists]
-            [:div.list-item-wrapper {:key list-id}
+            [:div.list-item-wrapper {:key (str cur-board-id list-id)}
              [lists/single-list cur-board-id list-id list]])
           [:div.list-item-wrapper
            [lists/new-list-button cur-board-id]]])))}))

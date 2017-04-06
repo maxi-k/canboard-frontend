@@ -26,7 +26,7 @@
   "Converts the data for a single list returned by an api call
   to the format used in the app-state."
   [list]
-  (update-in list [:attributes :cards] conv-cards))
+  (update list :cards conv-cards))
 
 (defn conv-lists
   "Converts an collection of lists returned by an api call
@@ -39,7 +39,7 @@
   "Converts the data for a single board returned by an api call
   to the format used in the app-state."
   [board]
-  (update-in board [:attributes :lists] conv-lists))
+  (update board :lists conv-lists))
 
 (defn conv-boards
   "Converts an collection of boards returned by an api call
@@ -53,7 +53,7 @@
   [username passwd after]
   (letfn [(convert-response [response]
             (merge (response :headers)
-                   {:data (-> response :body :data)}))
+                   (-> response :body)))
           (callback [response]
             (when (== 200 (response :status))
               (reset! data/current-user (convert-response response))
@@ -71,7 +71,7 @@
   [after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (when-let [boards (get-in response [:body :data])]
+            (when-let [boards (get-in response [:body :boards])]
               (reset! data/boards (conv-boards boards))
               (after)))]
     (rest/fetch-boards (data/token-data) callback)))
@@ -82,7 +82,7 @@
   [board-data after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (when-let [board (-> response :body :data)]
+            (when-let [board (get-in response [:body :board])]
               (swap! data/boards assoc (:id board) board)
               (after)))]
     (rest/create-board! board-data (data/token-data) callback)))
@@ -100,7 +100,7 @@
   [id after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (when-let [data (get-in response [:body :data])]
+            (when-let [data (get-in response [:body :lists])]
               (reset! data/lists (conv-lists data))
               (after)))]
     (rest/fetch-lists id (data/token-data) callback)))
@@ -110,17 +110,38 @@
   [list-data id after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (when-let [list (-> response :body :data)]
+            (when-let [list (get-in response [:body :list])]
               (swap! data/lists assoc (:id list) list)
               (after)))]
     (rest/create-list! list-data id (data/token-data) callback)))
+
+(defn delete-list!
+  "Deletes the list given by its id."
+  [board-id list-id after]
+  (letfn [(callback [response]
+            (update-auth-data! response)
+            (fetch-board-lists! board-id after))]
+    (rest/delete-list! board-id list-id (data/token-data) callback)))
 
 (defn fetch-list-cards!
   "Fetches the cards of a single list."
   [board-id list-id after]
   (letfn [(callback [response]
             (update-auth-data! response)
-            (when-let [data (get-in response [:body :data])]
-              (swap! data/lists assoc-in [list-id :attributes :cards] (conv-cards data))
+            (when-let [data (get-in response [:body :cards])]
+              (swap! data/lists assoc-in [list-id :cards] (conv-cards data))
               (after)))]
     (rest/fetch-cards board-id list-id (data/token-data) callback)))
+
+(defn create-card!
+  "Creates a card with given data in the given list (by board-id list-id)."
+  [card-data board-id list-id after]
+  (letfn [(callback [response]
+            (update-auth-data! response)
+            (when-let [card (get-in response [:body :card])]
+              (data/data! [:boards board-id
+                           :lists list-id
+                           :cards (:id card)]
+                          (conv-card card))
+              (after)))]
+    (rest/create-card! card-data board-id list-id (data/token-data) callback)))

@@ -88,6 +88,14 @@
                   :error-handler callback
                   :response-format json-auth-headers-response-format}))
 
+(defn delete-list!
+  "Deletes the board with given id"
+  [board-id list-id auth-data callback]
+  (auth-api-call #'DELETE (str "boards/" board-id "/lists/" list-id) auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :response-format json-auth-headers-response-format}))
+
 (defn create-list!
   "Creates a new board with the given data."
   [data board-id auth-data callback]
@@ -105,3 +113,13 @@
                  {:handler callback
                   :error-handler callback
                   :response-format json-auth-headers-response-format}))
+
+(defn create-card!
+  "Creates a new card with the given data."
+  [data board-id list-id auth-data callback]
+  (auth-api-call #'POST (str "boards/" board-id "/lists/" list-id "/cards") auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :format :json
+                  :response-format json-auth-headers-response-format
+                  :params data}))

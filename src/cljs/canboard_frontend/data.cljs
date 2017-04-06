@@ -67,7 +67,7 @@
                       ([k v] (swap! app-state assoc-in [:boards @current-board-id] v)))
                     [:current-board]))
 (def boards (r/cursor app-state [:boards]))
-(def lists (r/cursor current-board [:attributes :lists]))
+(def lists (r/cursor current-board [:lists]))
 (def view-data (r/cursor app-state [:view-data]))
 
 (defn token-data

@@ -51,7 +51,10 @@
   "Component for a button that creates a new card. "
   [board-id list-id]
   (letfn [(create-callback []
-            (util/log "creating!"))
+            (api/create-card! {:title (.-value (util/elem-by-id "card-title"))}
+                              board-id
+                              list-id
+                              #(toggle-card-creation list-id false)))
           (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
           (btn-callback [e] (create-callback))]
     (if (get-in @data/view-data [:cards :creating list-id])
@@ -69,8 +72,7 @@
          (lang/translate :do-cancel)]
         [sa/Button {:class "basic green"
                     :on-click btn-callback}
-         (lang/translate :do-create)]]
-       [:div.ui.bottom.attached.message "(Not implemented yet)"]]
+         (lang/translate :do-create)]]]
       [sa/Segment {:class "card-new-button secondary card collapsed"}
        [:div.content {:on-click #(toggle-card-creation list-id true)}
         [sa/Icon {:class "plus"}]
@@ -80,21 +82,31 @@
 (defn single-card
   "A single card inside a list."
   [board-id list-id card-id card-data]
-  [:span (-> card-data :attributes :title)])
+  [sa/Segment {:key card-id :class "card-overview-item"}
+   [:span (card-data :title)]])
+
 
 (defn single-list
   "A single list item to be rendered in the board view."
   [board-id list-id list-data]
-  (r/create-class
-   {:component-will-mount #(api/fetch-list-cards! board-id list-id identity)
-    :display-name "single-list"
-    :reagent-render
-    (fn [board-id list-id list-data]
-      (let [attr (-> list-data :attributes)]
+  (letfn [(delete-list []
+            (when (js/confirm (lang/translate :confirm :deletion))
+              (api/delete-list! board-id list-id identity)))]
+    (r/create-class
+     {:component-will-mount #(api/fetch-list-cards! board-id list-id identity)
+      :display-name "single-list"
+      :reagent-render
+      (fn [board-id list-id list-data]
         [sa/Segment {:class "list-item card segments"}
          [:div.content
-          [:span.header (attr :title)]]
-         (for [[card-id card] (attr :cards)]
-           [sa/Segment {:key card-id :class "card-overview-item"}
-            [single-card board-id list-id card-id card]])
-         [new-card-button board-id list-id]]))}))
+          [:span.header (list-data :title)
+           [sa/Dropdown {:icon "ellipsis horizontal"
+                         :class "list-menu-button"}
+            [sa/DropdownMenu
+             [sa/DropdownItem {:on-click delete-list
+                               :text (lang/translate :lists :delete)}]]]]
+          [:div.clearfloat]]
+         (for [[card-id card] (list-data :cards)]
+           ^{:key card-id}
+           [single-card board-id list-id card-id card])
+         [new-card-button board-id list-id]])})))

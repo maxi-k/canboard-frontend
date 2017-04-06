@@ -1,6 +1,8 @@
 @import 'variables';
 
-#boards-overview-wrapper, #board-view-wrapper {
+#boards-overview-wrapper { padding: $content-padding; }
+
+#board-view-wrapper {
     padding: $content-padding;
 }
 
@@ -15,6 +17,21 @@
 
     .extra.content:hover {
         color: $warning-red;
+    }
+}
+
+.list-item {
+
+    .list-menu-button {
+        visibility: hidden;
+        float:right;
+    }
+
+    &:hover {
+        .list-menu-button {
+            visibility: visible;
+        }
+
     }
 }
 
@@ -49,4 +66,5 @@
     margin: 0;
     border-top: 1px solid #333;
     border-bottom: 1px solid #333;
+
 }

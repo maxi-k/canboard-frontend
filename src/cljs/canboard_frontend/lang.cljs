@@ -12,9 +12,13 @@
         :do-cancel "Cancel"
         :title "Title"
         :description "Description"
-        :boards {:new "New Board"}
-        :lists {:new "New List"}
-        :cards {:new "New Card"}}})
+        :confirm {:deletion "Really Delete?"}
+        :boards {:new "New Board"
+                 :delete "Delete Board"}
+        :lists {:new "New List"
+                :delete "Delete List"}
+        :cards {:new "New Card"
+                :delete "Delete Card"}}})
 
 (defn translate [& keys]
   (get-in lang-map (cons @data/current-language keys)))
