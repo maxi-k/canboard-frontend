@@ -123,3 +123,11 @@
                   :format :json
                   :response-format json-auth-headers-response-format
                   :params data}))
+
+(defn delete-card!
+  "Deletes the card with given id"
+  [board-id list-id card-id auth-data callback]
+  (auth-api-call #'DELETE (str "boards/" board-id "/lists/" list-id "/cards/" card-id) auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :response-format json-auth-headers-response-format}))

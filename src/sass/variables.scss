@@ -4,3 +4,18 @@ $warning-red: #c62828;
 $light-text: #fff;
 
 $content-padding: 40px;
+
+@mixin menu-button($margin-top, $margin-right) {
+    display: block;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: $margin-top;
+    margin-right: $margin-right;
+
+}
+
+@mixin menu-button-hover {
+    visibility: visible;
+}

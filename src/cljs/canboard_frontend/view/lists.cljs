@@ -6,22 +6,24 @@
             [canboard-frontend.lang :as lang]
             [canboard-frontend.util :as util]
             [canboard-frontend.route :as route]
+            [canboard-frontend.view.cards :as cards]
             [canboard-frontend.view.parts :as parts]))
 
 (defn toggle-list-creation
   [do-create]
   (swap! data/view-data assoc-in [:lists :creating] do-create))
 
-(defn new-list-button
-  "Component for a button that creates a new list. "
+(defn new-list-form
+  "Form for creating a new list."
   [board-id]
   (letfn [(create-callback []
-            (api/create-list! {:title (.-value (util/elem-by-id :list-title))}
-                              board-id
-                              (fn [] (toggle-list-creation false))))
+            (let [list-form-elem (util/elem-by-id :list-title)]
+             (api/create-list! {:title (.-value list-form-elem)}
+                               board-id
+                               #(set! (.-value list-form-elem) nil))))
           (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
           (btn-callback [e] (create-callback))]
-    (if (get-in @data/view-data [:lists :creating])
+    (fn [board-id]
       [sa/Segment {:class "list-new-button piled card"}
        [:div.content
         [:p.header (lang/translate :lists :new)]
@@ -29,6 +31,7 @@
          [:div.field
           [:label (lang/translate :title)]
           [:input {:id :list-title :type :text :name :list-title :placeholder "List Name"
+                   :auto-focus true
                    :on-key-press key-callback}]]]]
        [:div.extra.content.ui.two.buttons
         [sa/Button {:class "basic red"
@@ -36,77 +39,45 @@
          (lang/translate :do-cancel)]
         [sa/Button {:class "basic green"
                     :on-click btn-callback}
-         (lang/translate :do-create)]]]
-      [sa/Segment {:class "list-new-button secondary piled card collapsed"}
-       [:div.content {:on-click #(toggle-list-creation true)}
-        [sa/Icon {:class "plus"}]
-        [:span {:class "middle aligned"}
-         (lang/translate :lists :new)]]])))
+         (lang/translate :do-create)]]])))
 
-(defn toggle-card-creation
-  [list-id do-create]
-  (swap! data/view-data assoc-in [:cards :creating list-id] do-create))
+(defn new-list-button
+  "Component for a button that creates a new list. "
+  [board-id]
+  (if (get-in @data/view-data [:lists :creating])
+    [new-list-form board-id]
+    [sa/Segment {:class "list-new-button secondary piled card collapsed"}
+     [:div.content {:on-click #(toggle-list-creation true)}
+      [sa/Icon {:class "plus"}]
+      [:span {:class "middle aligned"}
+       (lang/translate :lists :new)]]]))
 
-(defn new-card-button
-  "Component for a button that creates a new card. "
+(defn list-options
+  "The dropdown menu that shows the options for a list."
   [board-id list-id]
-  (letfn [(create-callback []
-            (api/create-card! {:title (.-value (util/elem-by-id "card-title"))}
-                              board-id
-                              list-id
-                              #(toggle-card-creation list-id false)))
-          (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
-          (btn-callback [e] (create-callback))]
-    (if (get-in @data/view-data [:cards :creating list-id])
-      [sa/Segment {:class "card-new-button card"}
-       [:div.content
-        [:p.header (lang/translate :cards :new)]
-        [:div.ui.form
-         [:div.field
-          [:label (lang/translate :title)]
-          [:input {:id :card-title :type :text :name :list-title :placeholder "Card Name"
-                   :on-key-press key-callback}]]]]
-       [:div.extra.content.ui.two.buttons
-        [sa/Button {:class "basic red"
-                    :on-click #(toggle-card-creation list-id false)}
-         (lang/translate :do-cancel)]
-        [sa/Button {:class "basic green"
-                    :on-click btn-callback}
-         (lang/translate :do-create)]]]
-      [sa/Segment {:class "card-new-button secondary card collapsed"}
-       [:div.content {:on-click #(toggle-card-creation list-id true)}
-        [sa/Icon {:class "plus"}]
-        [:span {:class "middle aligned"}
-         (lang/translate :cards :new)]]])))
-
-(defn single-card
-  "A single card inside a list."
-  [board-id list-id card-id card-data]
-  [sa/Segment {:key card-id :class "card-overview-item"}
-   [:span (card-data :title)]])
-
+  (letfn [(delete-list []
+            (when true ;; (js/confirm (lang/translate :confirm :deletion))
+              (api/delete-list! board-id list-id identity)))]
+    [sa/Dropdown {:icon "ellipsis horizontal"
+                  :class "list-menu-button"}
+     [sa/DropdownMenu
+      [sa/DropdownItem {:on-click delete-list
+                        :text (str " " (lang/translate :lists :delete))}]]]))
 
 (defn single-list
   "A single list item to be rendered in the board view."
   [board-id list-id list-data]
-  (letfn [(delete-list []
-            (when (js/confirm (lang/translate :confirm :deletion))
-              (api/delete-list! board-id list-id identity)))]
-    (r/create-class
-     {:component-will-mount #(api/fetch-list-cards! board-id list-id identity)
-      :display-name "single-list"
-      :reagent-render
-      (fn [board-id list-id list-data]
-        [sa/Segment {:class "list-item card segments"}
-         [:div.content
-          [:span.header (list-data :title)
-           [sa/Dropdown {:icon "ellipsis horizontal"
-                         :class "list-menu-button"}
-            [sa/DropdownMenu
-             [sa/DropdownItem {:on-click delete-list
-                               :text (lang/translate :lists :delete)}]]]]
-          [:div.clearfloat]]
-         (for [[card-id card] (list-data :cards)]
-           ^{:key card-id}
-           [single-card board-id list-id card-id card])
-         [new-card-button board-id list-id]])})))
+  (r/create-class
+   {:component-will-mount #(api/fetch-list-cards! board-id list-id identity)
+    :display-name "single-list"
+    :reagent-render
+    (fn [board-id list-id list-data]
+      [sa/Segment {:class "list-item card segments"}
+       [:div.content
+        [:span.header.list-title (list-data :title)]
+        [list-options board-id list-id]
+        [:div.clearfloat]]
+       (for [[card-id card] (list-data :cards)]
+         ^{:key card-id}
+         [cards/single-card board-id list-id card-id card])
+       [cards/new-card-button board-id list-id]])}))

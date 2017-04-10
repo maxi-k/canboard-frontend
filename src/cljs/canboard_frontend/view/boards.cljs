@@ -13,43 +13,54 @@
   [do-create]
   (swap! data/view-data assoc-in [:boards :creating] do-create))
 
+(defn new-board-form
+  "Form for a new board."
+  []
+  (letfn [(create-callback []
+            (let [board-title-form (util/elem-by-id :board-title)
+                  board-desc-form (util/elem-by-id :board-description)]
+              (api/create-board! {:title (.-value board-title-form)
+                                  :description (.-value board-desc-form)}
+                                 (fn []
+                                   (set! (.-value board-title-form) nil)
+                                   (set! (.-value board-desc-form) nil)
+                                   (.focus board-title-form)))))
+          (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
+          (btn-callback [e] (create-callback))]
+    [sa/Segment {:class "board-new-button piled card"}
+     [:div.content
+      [:p.header (lang/translate :boards :new)]
+      [:div.ui.form
+       [:div.field
+        [:label (lang/translate :title)]
+        [:input {:id :board-title :type :text :name :board-title :placeholder "Board Name"
+                 :auto-focus true
+                 :on-key-press key-callback}]]
+       [:div.field
+        [:label (lang/translate :description)]
+        [:input {:id :board-description :type :text :name :board-description :placeholder "Board Description"
+                 :on-key-press key-callback}]]]]
+     [:div.extra.content.ui.two.buttons
+      [sa/Button {:class "basic red"
+                  :on-click #(toggle-board-creation false)}
+       (lang/translate :do-cancel)]
+      [sa/Button {:class "basic green"
+                  :on-click btn-callback}
+       (lang/translate :do-create)]]]))
+
+
 (defn new-board-button
   "Component for a button that creates a new board.
   is-creating: Weather the button was clicked and should show form-data instead."
   [is-creating]
-  (letfn [(create-callback []
-            (api/create-board! {:title (.-value (util/elem-by-id :board-title))
-                                :description (.-value (util/elem-by-id :board-description))}
-                               (fn [] (route/goto! (route/boards-route))
-                                 (toggle-board-creation false))))
-          (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
-          (btn-callback [e] (create-callback))]
-    (if (get-in @data/view-data [:boards :creating])
-      [sa/Segment {:class "board-new-button piled card"}
-       [:div.content
-        [:p.header (lang/translate :boards :new)]
-        [:div.ui.form
-         [:div.field
-          [:label (lang/translate :title)]
-          [:input {:id :board-title :type :text :name :board-title :placeholder "Board Name"
-                   :on-key-press key-callback}]]
-         [:div.field
-          [:label (lang/translate :description)]
-          [:input {:id :board-description :type :text :name :board-description :placeholder "Board Description"
-                   :on-key-press key-callback}]]]]
-       [:div.extra.content.ui.two.buttons
-        [sa/Button {:class "basic red"
-                    :on-click #(toggle-board-creation false)}
-         (lang/translate :do-cancel)]
-        [sa/Button {:class "basic green"
-                    :on-click btn-callback}
-         (lang/translate :do-create)]]]
-      [sa/Segment {:class "board-new-button secondary piled card collapsed"}
-       [:div.content {
-                      :on-click #(toggle-board-creation true)}
-        [sa/Icon {:class "plus"}]
-        [:span {:class "middle aligned"}
-         (lang/translate :boards :new)]]])))
+  (if (get-in @data/view-data [:boards :creating])
+    [new-board-form]
+    [sa/Segment {:class "board-new-button secondary piled card collapsed"}
+     [:div.content {
+                    :on-click #(toggle-board-creation true)}
+      [sa/Icon {:class "plus"}]
+      [:span {:class "middle aligned"}
+       (lang/translate :boards :new)]]]))
 
 (def overview
   "Overview of the boards available to the current user."
@@ -64,16 +75,17 @@
         (parts/default-template
          [:div#boards-overview-wrapper
           [:div {:class "ui cards"}
-           (for [[board-id board] @data/boards]
-             [:div.overview-item-wrapper {:key board-id}
-              [sa/Segment {:class "board-overview-item card"}
-               [:div.content
-                [:a.header {:href (route/board-route {:id board-id})}
-                 (:title board)]
-                [:span.description (:description board)]]
-               [sa/Button {:class "extra content"
-                           :on-click #(delete-board board-id)}
-                (lang/translate :boards :delete)]]])
+           (doall
+            (for [[board-id board] @data/boards]
+              [:div.overview-item-wrapper {:key board-id}
+               [sa/Segment {:class "board-overview-item card"}
+                [:div.content
+                 [:a.header {:href (route/board-route {:id board-id})}
+                  (:title board)]
+                 [:span.description (:description board)]]
+                [sa/Button {:class "extra content"
+                            :on-click #(delete-board board-id)}
+                 (lang/translate :boards :delete)]]]))
            [:div.overview-item-wrapper
             [new-board-button]]]]))})))
 

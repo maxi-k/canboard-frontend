@@ -145,3 +145,11 @@
                           (conv-card card))
               (after)))]
     (rest/create-card! card-data board-id list-id (data/token-data) callback)))
+
+(defn delete-card!
+  "Deletes the card given by its id."
+  [board-id list-id card-id after]
+  (letfn [(callback [response]
+            (update-auth-data! response)
+            (fetch-list-cards! board-id list-id after))]
+    (rest/delete-card! board-id list-id card-id (data/token-data) callback)))

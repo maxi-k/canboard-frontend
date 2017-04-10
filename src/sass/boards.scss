@@ -22,14 +22,23 @@
 
 .list-item {
 
-    .list-menu-button {
-        visibility: hidden;
-        float:right;
+    .content {
+        text-align: center;
+
+        .list-title {
+            display: inline !important;
+        }
+
+        .list-menu-button {
+            @include menu-button(1.24em, 1.1em)
+        }
+
+
     }
 
     &:hover {
         .list-menu-button {
-            visibility: visible;
+            @include menu-button-hover;
         }
 
     }
@@ -66,5 +75,20 @@
     margin: 0;
     border-top: 1px solid #333;
     border-bottom: 1px solid #333;
+
+
+    .card-title {
+        text-align: center;
+    }
+
+    .card-menu-button {
+        @include menu-button(1.1em, 1.1em)
+    }
+
+    &:hover {
+        .card-menu-button {
+            @include menu-button-hover;
+        }
+    }
 
 }
