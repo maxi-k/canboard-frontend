@@ -100,7 +100,7 @@
                         [devcards "0.2.1-7"]
                         [pjstadig/humane-test-output "0.8.1"]]
 
-         :source-paths ["env/dev/clj" "env/dev/cljs"]
+         :source-paths ["env/dev/clj" "env/dev/cljs" "script"]
          :plugins [[lein-figwheel "0.5.8"]
                    [lein-doo "0.1.6"]
                    [cider/cider-nrepl "0.10.0-SNAPSHOT"]
