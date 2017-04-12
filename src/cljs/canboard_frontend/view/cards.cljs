@@ -1,5 +1,7 @@
 (ns canboard-frontend.view.cards
   (:require [reagent.core :as r]
+            [goog.string :as gstring]
+            [markdown.core :refer [md->html]]
             [soda-ash.core :as sa]
             [canboard-frontend.api :as api]
             [canboard-frontend.data :as data]
@@ -16,6 +18,11 @@
   [list-id do-create]
   (swap! data/view-data assoc-in [:cards :creating list-id] do-create))
 
+(defn toggle-card-view
+  [board-id list-id card-id]
+  (swap! data/detail-view-data assoc :card-view {:board-id board-id :list-id list-id :card-id card-id})
+  (route/goto! (route/card-detail-route {:board_id board-id :list_id list-id :card_id card-id})))
+
 (defn new-card-form
   "Form for creating a new card"
   [board-id list-id]
@@ -28,21 +35,21 @@
           (key-callback [e] (when (= 13 (.-charCode e)) (create-callback)))
           (btn-callback [e] (create-callback))]
     [sa/Segment {:class "card-new-button card"}
-       [:div.content
-        [:p.header (lang/translate :cards :new)]
-        [:div.ui.form
-         [:div.field
-          [:label (lang/translate :title)]
-          [:input {:id (new-card-field-id list-id) :type :text :name :card-title :placeholder "Card Name"
-                   :auto-focus true
-                   :on-key-press key-callback}]]]]
-       [:div.extra.content.ui.two.buttons
-        [sa/Button {:class "basic red"
-                    :on-click #(toggle-card-creation list-id false)}
-         (lang/translate :do-cancel)]
-        [sa/Button {:class "basic green"
-                    :on-click btn-callback}
-         (lang/translate :do-create)]]]))
+     [:div.content
+      [:p.header (lang/translate :cards :new)]
+      [:div.ui.form
+       [:div.field
+        [:label (lang/translate :title)]
+        [:input {:id (new-card-field-id list-id) :type :text :name :card-title :placeholder "Card Name"
+                 :auto-focus true
+                 :on-key-press key-callback}]]]]
+     [:div.extra.content.ui.two.buttons
+      [sa/Button {:class "basic red"
+                  :on-click #(toggle-card-creation list-id false)}
+       (lang/translate :do-cancel)]
+      [sa/Button {:class "basic green"
+                  :on-click btn-callback}
+       (lang/translate :do-create)]]]))
 
 (defn new-card-button
   "Component for a button that creates a new card. "
@@ -67,10 +74,41 @@
       [sa/DropdownItem {:on-click delete-card
                         :text (str " " (lang/translate :cards :delete))}]]]))
 
-(defn single-card
-  "A single card inside a list."
+(defn markdown-render
+  [content]
+  [:div.md-output
+   {:dangerouslySetInnerHTML {:__html (md->html content)}}])
+
+(defn card-detail
+  "View for a single card (to be viewed, edited)."
+  []
+  (let [{:keys [board-id list-id card-id]} (@data/detail-view-data :card-view)
+        card-data (r/cursor data/current-board [:lists list-id :cards card-id])
+        description (:description @card-data)
+        lifecycle-fn (fn [] (let [desc (:description @card-data)]
+                             (js/setTimeout (fn [] (swap! card-data assoc :description desc)) 100)))]
+    (r/create-class
+     {:component-will-mount lifecycle-fn
+      :component-will-unmount lifecycle-fn
+      :reagent-render
+      (fn []
+        [:div#detail-content-window
+         [:a#detail-content-close {:on-click #(route/goto! (route/board-route {:id board-id}))}
+          [sa/Icon {:name "remove"}]]
+         [:h3 {:style {:margin-top 0}}
+          (:title @card-data)]
+         [:hr.clearfloat]
+         [:div.description-edit
+          [:textarea.md-input {:value (:description @card-data)
+                               :on-change #(swap! card-data assoc :description (-> % .-target .-value))}]
+          [markdown-render (:description @card-data)]]])})))
+
+(defn card-overview-item
+  "A single card overview item inside a list."
   [board-id list-id card-id card-data]
-  [sa/Segment {:key card-id :class "card-overview-item"}
-   [:span.card-title (card-data :title)]
+  [sa/Segment {:key card-id
+               :class "card-overview-item"
+               :on-click #(toggle-card-view board-id list-id card-id)}
+   [:a.card-title (card-data :title)]
    [card-options board-id list-id card-id]
    [:div.clearfloatlists]])

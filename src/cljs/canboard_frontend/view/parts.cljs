@@ -1,6 +1,7 @@
 (ns canboard-frontend.view.parts
   (:require [soda-ash.core :as sa]
             [canboard-frontend.lang :as lang]
+            [canboard-frontend.data :as data]
             [canboard-frontend.api :as api]))
 
 (defn title []
@@ -28,10 +29,24 @@
 
 (defn default-wrapper [content]
   [:div#app-content
-   content])
+   (if (fn? content)
+     [content]
+     content)])
 
-(defn default-template [content]
-  [:div#app-wrapper
-   [default-header]
-   [default-wrapper content]
-   [default-footer]])
+(defn detail-wrapper [detail-content]
+  [:div#detail-content-wrapper
+   (if (fn? detail-content)
+     [detail-content]
+     detail-content)])
+
+(defn default-template
+  ([content detail-content]
+   [:div#app-wrapper
+    [default-header]
+    [default-wrapper content]
+    [default-footer]
+    (when detail-content
+      [detail-wrapper detail-content])])
+
+  ([content]
+   [default-template content nil]))

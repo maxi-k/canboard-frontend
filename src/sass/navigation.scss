@@ -1,4 +1,4 @@
-@import 'variables';
+@import 'includes';
 @import 'parts';
 
 #navbar {
@@ -20,7 +20,6 @@
 
         background-size: $logo-size $logo-size;
         background-repeat: no-repeat;
-
     }
 
     #navbar-title {

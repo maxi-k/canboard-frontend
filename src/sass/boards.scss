@@ -1,4 +1,4 @@
-@import 'variables';
+@import 'includes';
 
 #boards-overview-wrapper { padding: $content-padding; }
 
@@ -6,11 +6,14 @@
     padding: $content-padding;
 }
 
-.overview-item-wrapper, .list-item-wrapper {
+.overview-item-wrapper,
+.list-item-wrapper {
     margin: 7px;
 }
 
-.board-overview-item, .board-new-button, .list-item {
+.board-overview-item,
+.board-new-button,
+.list-item {
     width: 200px;
     display: block;
     color: inherit;
@@ -32,15 +35,12 @@
         .list-menu-button {
             @include menu-button(1.24em, 1.1em)
         }
-
-
     }
 
     &:hover {
         .list-menu-button {
             @include menu-button-hover;
         }
-
     }
 }
 
@@ -63,21 +63,18 @@
     line-height: 118px;
 }
 
-.list-new-button.collapsed {
+.list-new-button.collapsed {}
 
-}
-
-.list-item {
-
-}
+.list-item {}
 
 .card-overview-item {
     margin: 0;
     border-top: 1px solid #333;
     border-bottom: 1px solid #333;
-
+    cursor: pointer;
 
     .card-title {
+        color: inherit;
         text-align: center;
     }
 
@@ -90,5 +87,4 @@
             @include menu-button-hover;
         }
     }
-
 }

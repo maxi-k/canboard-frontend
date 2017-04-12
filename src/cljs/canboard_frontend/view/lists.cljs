@@ -79,5 +79,5 @@
         [:div.clearfloat]]
        (for [[card-id card] (list-data :cards)]
          ^{:key card-id}
-         [cards/single-card board-id list-id card-id card])
+         [cards/card-overview-item board-id list-id card-id card])
        [cards/new-card-button board-id list-id]])}))

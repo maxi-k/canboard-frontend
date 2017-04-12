@@ -10,6 +10,7 @@
                  [reagent-utils "0.2.0"]
                  [soda-ash "0.2.0"]
                  [cljs-ajax "0.5.8"]
+                 [markdown-clj "0.9.98"]
                  [secretary "1.2.3"]
                  [alandipert/storage-atom "1.2.4"]
                  [lein-doo "0.1.6"]

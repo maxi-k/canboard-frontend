@@ -7,6 +7,7 @@
             [canboard-frontend.util :as util]
             [canboard-frontend.route :as route]
             [canboard-frontend.view.boards :as boards]
+            [canboard-frontend.view.cards :as cards]
             [canboard-frontend.view.parts :as parts :refer [default-template]]))
 
 (defn home-page []
@@ -18,8 +19,14 @@
      [:p
       (str @data/current-user)]]]))
 
-(defn boards-page [] boards/overview)
-(defn board-page [] boards/board-page)
+(defn boards-page [] (default-template
+                      boards/overview))
+(defn board-page [] (default-template
+                     boards/board-page))
+(defn card-detail-page []
+  (default-template
+   boards/board-page
+   #(cards/card-detail)))
 
 (def login-page
   (letfn [(auth []

@@ -1,8 +1,9 @@
 // @import 'normalize'; // normalize.css
-@import 'variables';
+@import 'includes';
 @import 'parts';
 @import 'navigation';
 @import 'boards';
+@import 'detail-view';
 
 
 .clearfloat { clear: both; }

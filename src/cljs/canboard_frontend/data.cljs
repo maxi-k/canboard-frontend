@@ -18,10 +18,15 @@
    (r/atom initial-state)
    :app-storage))
 
+
 ;; Development Environment - log the app state when it changes
 #_(add-watch app-state :log
              (fn [_ _ _ new]
                (.log js/console (str new))))
+#_(set! app-state (r/atom initial-state))
+#_(set! app-state (local-storage
+                   (r/atom initial-state)
+                   ":app-storage"))
 
 (defn data
   "Utility function for getting data out of the app-state
@@ -43,6 +48,7 @@
 (defn reset-data!
   "Resets the app-state to the initial-state."
   []
+  (.clear js/localStorage)
   (data! [] initial-state))
 
 (defn session-put!
@@ -69,6 +75,7 @@
 (def boards (r/cursor app-state [:boards]))
 (def lists (r/cursor current-board [:lists]))
 (def view-data (r/cursor app-state [:view-data]))
+(def detail-view-data (r/cursor view-data [:detail-view]))
 
 (defn token-data
   "Returns a map of relevant token data of the current login.

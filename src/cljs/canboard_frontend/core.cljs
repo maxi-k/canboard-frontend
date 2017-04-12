@@ -11,7 +11,9 @@
   "Map of path => page for client-side routing using secretary."
   {"/"              #'view/home-page
    "/boards"        #'view/boards-page
-   "/boards/:id"    #'view/board-page})
+   "/boards/:id"    #'view/board-page
+   "/boards/:board_id/lists/:list_id/cards/:card_id" #'view/card-detail-page})
+
 
 (defn dispatch-view
   "General function to dispatch which views should be served given the current state."

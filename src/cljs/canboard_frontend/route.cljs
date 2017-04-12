@@ -19,8 +19,11 @@
       (reset! data/current-board-id (js/parseInt id))
       (data/current-page! (pages "/boards/:id"))))
 
-  (secretary/defroute list-route "/boards/:board_id/list/:id" {board_id :board_id id :id}
-    (data/current-page! (pages "/boards/:board_id/list/:id")))
+  (secretary/defroute list-route "/boards/:board_id/lists/:id" {board_id :board_id id :id}
+    (data/current-page! (pages "/boards/:board_id/lists/:id")))
+
+  (secretary/defroute card-detail-route "/boards/:board_id/lists/:list_id/cards/:card_id" {:keys [board_id list_id card_id]}
+    (data/current-page! (pages "/boards/:board_id/lists/:list_id/cards/:card_id")))
 
   (accountant/configure-navigation!
    {:nav-handler
