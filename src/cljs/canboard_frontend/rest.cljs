@@ -1,6 +1,6 @@
 (ns canboard-frontend.rest
   (:require [canboard-frontend.util :as util]
-            [ajax.core :as ajax :refer [GET POST PUT DELETE]]
+            [ajax.core :as ajax :refer [GET POST PUT DELETE PATCH]]
             [ajax.protocols :as ajaxp]
             [goog.json :as json]))
 
@@ -131,3 +131,14 @@
                  {:handler callback
                   :error-handler callback
                   :response-format json-auth-headers-response-format}))
+
+(defn update-card!
+  "Updates the card with given board-, list- and card-id
+  with the given map of key->value pairs."
+  [board-id list-id card-id data auth-data callback]
+  (auth-api-call #'PATCH (str "boards/" board-id "/lists/" list-id "/cards/" card-id) auth-data
+                 {:handler callback
+                  :error-handler callback
+                  :format :json
+                  :response-format json-auth-headers-response-format
+                  :params data}))

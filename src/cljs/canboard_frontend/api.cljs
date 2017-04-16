@@ -153,3 +153,20 @@
             (update-auth-data! response)
             (fetch-list-cards! board-id list-id after))]
     (rest/delete-card! board-id list-id card-id (data/token-data) callback)))
+
+(defn update-card!
+  "Updates the card given by board-, list- and card-id.
+  Only updates the attributes given by attrs."
+  [board-id list-id card-id keys after]
+  (letfn [(callback [response]
+            (update-auth-data! response)
+            (when-let [card (get-in response [:body :card])]
+              (data/data! [:boards board-id
+                           :list list-id
+                           :cards (:id card)]
+                          (conv-card card)))
+            (after))]
+    (-> @data/app-state
+        (get-in [:boards board-id :lists list-id :cards card-id])
+        (select-keys keys)
+        (#(rest/update-card! board-id list-id card-id % (data/token-data) callback)))))

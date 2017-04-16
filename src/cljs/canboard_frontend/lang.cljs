@@ -9,8 +9,10 @@
         :session-over "It looks like your session has expired"
         :login-again "Please log in again"
         :do-create "Create"
+        :do-edit "Edit"
         :do-cancel "Cancel"
         :title "Title"
+        :done "Done"
         :description "Description"
         :confirm {:deletion "Really Delete?"}
         :boards {:new "New Board"

@@ -89,5 +89,6 @@
 
 (defn board-by-id
   "Returns the board with given id, or nil if there is none."
+  ^{:deprecated true}
   [id]
   (first (filter #(== (:id %) id) @boards)))
