@@ -26,12 +26,32 @@
             cursor: pointer;
         }
 
+        .detail-view-head-divider {
+            margin-bottom: 1em;
+        }
+
         .md-input {
             width: 100%;
             min-height: 200px;
         }
 
         .md-output {
+        }
+
+        .detail-view-header {
+
+            .detail-view-heading {
+                display: inline-block;
+                float: left;
+                margin-top: 0.5em;
+                margin-bottom: 0.2em;
+                margin-left: 0.2em;
+            }
+
+        }
+
+        .detail-view-single-content {
+            margin-top: 0.4em;
         }
 
     }

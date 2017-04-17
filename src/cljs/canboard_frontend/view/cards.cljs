@@ -86,13 +86,13 @@
         editing (r/cursor data/detail-view-data [:card-view :editing])
         desc-data (r/cursor data/detail-view-data [:card-view :desc-data])
         card-data (r/cursor data/current-board [:lists list-id :cards card-id])
-        toggle-edit (fn [am-editing]
-                      (if am-editing
-                        (do
-                          (swap! card-data assoc :description @desc-data)
-                          (api/update-card! board-id list-id card-id [:description] identity))
+        toggle-edit (fn [do-commit]
+                      (if do-commit
+                        (do (swap! card-data assoc :description @desc-data)
+                            (api/update-card! board-id list-id card-id [:description] identity))
                         (reset! desc-data (:description @card-data)))
-                      (swap! editing not))]
+                      (swap! editing not))
+        editing-toggle (fn [commit] {:on-click #(toggle-edit commit)})]
     (r/create-class
      {:component-did-mount (fn [] (reset! desc-data (:description card-data)))
       :reagent-render
@@ -102,25 +102,29 @@
           [sa/Icon {:name "remove"}]]
          [:h3 {:style {:margin-top 0}}
           (:title @card-data)]
-         [:hr.clearfloat]
-         [sa/Segment {:class "description-edit ui form"}
-          [:h4.left.floated.inline-block-elem (lang/translate :description)]
-
-          [sa/Button {:on-click #(toggle-edit @editing)
-                      :class "right floated green"}
-           (lang/translate (if @editing :done :do-edit))]
-          (when @editing
-            [sa/Button {:on-click #(toggle-edit false)
-                        :class "right floated red"}
-             (lang/translate :do-cancel)])
-          [:div.clearfloat]
-          (when @editing
-            [:div.ui.field
-             [:label "Markdown"]
-             [:textarea.md-input {:value @desc-data
-                                  :on-change #(reset! desc-data (-> % .-target .-value))}]])
-          [:div.md-output-wrapper.ui.field
-           [markdown-render (if @editing @desc-data (:description @card-data))]]]])})))
+         [:hr.clearfloat.detail-view-head-divider]
+         [:div
+          [:div.detail-view-header
+           [:h4.detail-view-heading (lang/translate :description)]
+           (when @editing
+             [sa/Button (merge (editing-toggle true) {:class "right floated green"})
+              (lang/translate :done)])
+           (when @editing
+             [sa/Button (merge (editing-toggle false) {:class "right floated red"})
+              (lang/translate :do-cancel)])
+           [:div.clearfloat]]
+          [sa/Segment (let [base {:class "description-edit detail-view-single-content ui form"}]
+                        (if @editing base (merge (editing-toggle false) base)))
+           (when @editing
+             [:div.ui.field
+              [:textarea.md-input {:value @desc-data
+                                   :placeholder "Markdown"
+                                   :on-change #(reset! desc-data (-> % .-target .-value))}]])
+           [:div.md-output-wrapper.ui.field
+            (if @editing (merge (editing-toggle true) {}))
+            (if (and (not @editing) (empty? (:description @card-data)))
+              [:span.grey.text (lang/translate :description/not-found)]
+              [markdown-render (if @editing @desc-data (:description @card-data))])]]]])})))
 
 (defn card-overview-item
   "A single card overview item inside a list."

@@ -9,6 +9,8 @@
 .clearfloat { clear: both; }
 .block-elem { display: block; }
 .inline-block-elem { display: inline-block; }
+.grey.text {color: $grey-text}
+.bold.text {font-weight: bold;}
 
 .body-container {
     font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;

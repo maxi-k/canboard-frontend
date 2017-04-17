@@ -14,6 +14,7 @@
         :title "Title"
         :done "Done"
         :description "Description"
+        :description/not-found "There's no description yet. Click to add one."
         :confirm {:deletion "Really Delete?"}
         :boards {:new "New Board"
                  :delete "Delete Board"}
