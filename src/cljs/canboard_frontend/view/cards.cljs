@@ -1,7 +1,7 @@
 (ns canboard-frontend.view.cards
   (:require [reagent.core :as r]
             [goog.string :as gstring]
-            [markdown.core :refer [md->html]]
+            [cljsjs.marked]
             [soda-ash.core :as sa]
             [canboard-frontend.api :as api]
             [canboard-frontend.data :as data]
@@ -74,11 +74,6 @@
       [sa/DropdownItem {:on-click delete-card
                         :text (str " " (lang/translate :cards :delete))}]]]))
 
-(defn markdown-render
-  [content]
-  [:div.md-output
-   {:dangerouslySetInnerHTML {:__html (md->html content)}}])
-
 (defn card-detail
   "View for a single card (to be viewed, edited)."
   []
@@ -86,45 +81,25 @@
         editing (r/cursor data/detail-view-data [:card-view :editing])
         desc-data (r/cursor data/detail-view-data [:card-view :desc-data])
         card-data (r/cursor data/current-board [:lists list-id :cards card-id])
+        card-desc-data (r/cursor card-data [:description])
         toggle-edit (fn [do-commit]
                       (if do-commit
                         (do (swap! card-data assoc :description @desc-data)
                             (api/update-card! board-id list-id card-id [:description] identity))
                         (reset! desc-data (:description @card-data)))
-                      (swap! editing not))
-        editing-toggle (fn [commit] {:on-click #(toggle-edit commit)})]
-    (r/create-class
-     {:component-did-mount (fn [] (reset! desc-data (:description card-data)))
-      :reagent-render
-      (fn []
-        [:div#detail-content-window
-         [:a#detail-content-close {:on-click #(route/goto! (route/board-route {:id board-id}))}
-          [sa/Icon {:name "remove"}]]
-         [:h3 {:style {:margin-top 0}}
-          (:title @card-data)]
-         [:hr.clearfloat.detail-view-head-divider]
-         [:div
-          [:div.detail-view-header
-           [:h4.detail-view-heading (lang/translate :description)]
-           (when @editing
-             [sa/Button (merge (editing-toggle true) {:class "right floated green"})
-              (lang/translate :done)])
-           (when @editing
-             [sa/Button (merge (editing-toggle false) {:class "right floated red"})
-              (lang/translate :do-cancel)])
-           [:div.clearfloat]]
-          [sa/Segment (let [base {:class "description-edit detail-view-single-content ui form"}]
-                        (if @editing base (merge (editing-toggle false) base)))
-           (when @editing
-             [:div.ui.field
-              [:textarea.md-input {:value @desc-data
-                                   :placeholder "Markdown"
-                                   :on-change #(reset! desc-data (-> % .-target .-value))}]])
-           [:div.md-output-wrapper.ui.field
-            (if @editing (merge (editing-toggle true) {}))
-            (if (and (not @editing) (empty? (:description @card-data)))
-              [:span.grey.text (lang/translate :description/not-found)]
-              [markdown-render (if @editing @desc-data (:description @card-data))])]]]])})))
+                      (swap! editing not))]
+    (fn []
+      [:div#detail-content-window
+       [:a#detail-content-close {:on-click #(route/goto! (route/board-route {:id board-id}))}
+        [sa/Icon {:name "remove"}]]
+       [:h3 {:style {:margin-top 0}}
+        (:title @card-data)]
+       [:hr.clearfloat.detail-view-head-divider]
+       [:div
+        [:h4.detail-view-heading.ui.top.attached.header (lang/translate :description)]
+        [parts/markdown-editor editing toggle-edit desc-data card-desc-data
+         (lang/translate :description/not-found) "bottom attached"]
+        ]])))
 
 (defn card-overview-item
   "A single card overview item inside a list."

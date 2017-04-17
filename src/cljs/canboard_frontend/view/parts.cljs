@@ -47,6 +47,43 @@
     [default-footer]
     (when detail-content
       [detail-wrapper detail-content])])
-
   ([content]
    [default-template content nil]))
+
+(defn markdown-render
+  [content]
+  [:div.md-output
+   [:div.markdown-body
+    {:dangerouslySetInnerHTML {:__html (js/marked
+                                        (str content)
+                                        #js {:gfm true
+                                             :breaks true
+                                             :smartLists true})}}]])
+
+(defn markdown-editor
+  [editing toggle-edit-fn cache-atom persistant-atom empty-description wrapper-classes]
+  (r/create-class
+   :component-did-mount (fn [] (reset! cache-atom @persistant-atom))
+   :reagent-render
+   (fn []
+     (let [editing-toggle (fn [commit] {:on-click #(toggle-edit-fn commit)})]
+       [sa/Segment (let [base {:class (str "ui form " wrapper-classes)}]
+                     (if @editing base (merge (editing-toggle false) base)))
+        (when @editing
+          [:div.md-editor
+           [:div.md-editor-controls
+            [:span.editor-explanation (lang/translate :explanation :markdown)]
+            [sa/Button (merge (editing-toggle true) {:class "right floated green"})
+             (lang/translate :done)]
+            [sa/Button (merge (editing-toggle false) {:class "right floated red"})
+             (lang/translate :do-cancel)]
+            [:div.clearfloat]]
+           [:div.ui.field
+            [:textarea.md-input {:value @cache-atom
+                                 :placeholder "Markdown"
+                                 :on-change #(reset! cache-atom (-> % .-target .-value))}]]])
+        [:div.md-output-wrapper.ui.field
+         (if @editing (merge (editing-toggle true) {}))
+         (if (and (not @editing) (empty? @persistant-atom))
+           [:span.grey.text empty-description]
+           [markdown-render (if @editing @cache-atom @persistant-atom)])]]))))
