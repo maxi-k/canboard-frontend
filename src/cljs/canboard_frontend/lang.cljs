@@ -22,7 +22,8 @@
         :lists {:new "New List"
                 :delete "Delete List"}
         :cards {:new "New Card"
-                :delete "Delete Card"}}})
+                :delete "Delete Card"
+                :title "Card Title"}}})
 
 (defn translate [& keys]
   (get-in lang-map (cons @data/current-language keys)))

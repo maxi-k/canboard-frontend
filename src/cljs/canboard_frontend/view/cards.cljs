@@ -74,30 +74,52 @@
       [sa/DropdownItem {:on-click delete-card
                         :text (str " " (lang/translate :cards :delete))}]]]))
 
+(defn card-detail-title
+  "The title element for the detail view of a card."
+  [board-id list-id card-id card-data]
+  (let [title-data (r/cursor data/detail-view-data [:card-view :editing/title])
+        commit-fn (fn [] (swap! card-data assoc :title @title-data)
+                    (reset! title-data false)
+                    (api/update-card! board-id list-id card-id [:title] identity))
+        key-fn (fn [e] (when (= 13 (.-charCode e)) (commit-fn)))]
+    (fn [board-id list-id card-id card-data]
+      (if @title-data
+        [:div.ui.input
+         [:input {:type :text
+                  :placeholder (lang/translate :cards :title)
+                  :value @title-data
+                  :auto-focus true
+                  :on-focus #(-> % .-target .select)
+                  :on-change #(reset! title-data (-> % .-target .-value))
+                  :on-key-press key-fn
+                  :on-blur commit-fn}]]
+        [:h3 {:style {:margin-top 0}
+              :on-click #(reset! title-data (:title @card-data))}
+         (:title @card-data)]))))
+
 (defn card-detail
   "View for a single card (to be viewed, edited)."
   []
   (let [{:keys [board-id list-id card-id]} (@data/detail-view-data :card-view)
-        editing (r/cursor data/detail-view-data [:card-view :editing])
+        editing-description (r/cursor data/detail-view-data [:card-view :editing/description])
         desc-data (r/cursor data/detail-view-data [:card-view :desc-data])
         card-data (r/cursor data/current-board [:lists list-id :cards card-id])
         card-desc-data (r/cursor card-data [:description])
-        toggle-edit (fn [do-commit]
-                      (if do-commit
-                        (do (swap! card-data assoc :description @desc-data)
-                            (api/update-card! board-id list-id card-id [:description] identity))
-                        (reset! desc-data (:description @card-data)))
-                      (swap! editing not))]
+        toggle-edit-desc (fn [do-commit]
+                           (if do-commit
+                             (do (swap! card-data assoc :description @desc-data)
+                                 (api/update-card! board-id list-id card-id [:description] identity))
+                             (reset! desc-data (:description @card-data)))
+                           (swap! editing-description not))]
     (fn []
       [:div#detail-content-window
        [:a#detail-content-close {:on-click #(route/goto! (route/board-route {:id board-id}))}
         [sa/Icon {:name "remove"}]]
-       [:h3 {:style {:margin-top 0}}
-        (:title @card-data)]
+       [card-detail-title board-id list-id card-id card-data]
        [:hr.clearfloat.detail-view-head-divider]
        [:div
         [:h4.detail-view-heading.ui.top.attached.header (lang/translate :description)]
-        [parts/markdown-editor editing toggle-edit desc-data card-desc-data
+        [parts/markdown-editor editing-description toggle-edit-desc desc-data card-desc-data
          (lang/translate :description/not-found) "bottom attached"]
         ]])))
 
