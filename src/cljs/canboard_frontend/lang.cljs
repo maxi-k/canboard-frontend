@@ -8,6 +8,7 @@
         :do-logout "Logout"
         :session-over "It looks like your session has expired"
         :login-again "Please log in again"
+        :wrong-credentials "It looks like your email or password were incorrect"
         :do-create "Create"
         :do-edit "Edit"
         :do-cancel "Cancel"

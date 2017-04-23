@@ -1,8 +1,5 @@
 (ns canboard-frontend.util)
 
-(def relevant-auth-headers [:access-token :token-type :client :uid :expiry])
-(def relevant-auth-headers-str (map name relevant-auth-headers))
-
 (defn log [s] (.log js/console s))
 
 (defn elem-by-id [id]
@@ -24,3 +21,13 @@
   (reduce (fn [xs x] (assoc xs (key-fn x) (val-fn x)))
           {}
           coll))
+
+(defn wrap
+  "Wraps the given element in a vector if it's not a sequential thing,
+  otherwise returns it unchanges."
+  [elem]
+  (if (sequential? elem) elem [elem]))
+
+(defn build-path
+  [& path-components]
+  (apply str "/" (interpose "/" path-components)))

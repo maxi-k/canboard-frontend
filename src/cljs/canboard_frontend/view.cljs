@@ -28,6 +28,16 @@
    boards/board-page
    #(cards/card-detail)))
 
+(defn login-warning
+  [& sentences]
+  (let [cnt (atom 0)]
+    [:div#alert {:class "ui yellow segment"}
+     (doall
+      (interpose
+       [:br {:key ((fn [] (swap! cnt inc) cnt))}]
+       (map (fn [s] [:span {:key (str s)}
+                    (lang/translate s) "."]) sentences)))]))
+
 (def login-page
   (letfn [(auth []
             (api/authenticate-user! (.-value (util/elem-by-id :login-username))
@@ -44,10 +54,10 @@
                    :class "ui centered"
                    :src "/img/logo/logo-large.png"}]
         [:div#big-title (parts/title)]
-        (when (:unauthorized @data/current-user)
-          [:div#alert {:class "ui yellow segment"}
-           [:span (lang/translate :session-over) "."] [:br]
-           [:span (lang/translate :login-again) "."]])
+        (if (:wrong-credentials @data/current-user)
+          (login-warning :wrong-credentials)
+          (when (:unauthorized @data/current-user)
+            (login-warning :session-over :login-again)))
         [:div.ui.form
          [:div.field
           [:label (translate :user-name)]
@@ -58,4 +68,5 @@
           [:input {:id :login-password :type :password :name :password :placeholder "password"
                    :on-key-press key-callback}]]
          [sa/Button {:on-click btn-callback}
-          (translate :do-login)]]]])))
+          (translate :do-login)]]]]))
+  )

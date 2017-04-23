@@ -7,6 +7,7 @@
 (def ^:private initial-state
   "The initial state of the application"
   {:lang :en
+   :auth nil
    :current-user nil
    :boards {}
    :current-board nil
@@ -17,7 +18,6 @@
   (local-storage
    (r/atom initial-state)
    :app-storage))
-
 
 ;; Development Environment - log the app state when it changes
 #_(add-watch app-state :log
@@ -78,14 +78,9 @@
 (def detail-view-data (r/cursor view-data [:detail-view]))
 
 (defn token-data
-  "Returns a map of relevant token data of the current login.
-  What headers are 'relevant' is defined in `util/relevant-auth-headers`."
+  "Returns the data from the current app state which is required for authentication."
   []
-  (let [relevant util/relevant-auth-headers]
-    (update
-     (reduce (fn [h key] (assoc h (name key) (@current-user key))) {} relevant)
-     "expiry"
-     js/parseInt)))
+  @current-user)
 
 (defn board-by-id
   "Returns the board with given id, or nil if there is none."
